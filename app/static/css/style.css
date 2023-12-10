@@ -1,26 +1,25 @@
 *{
-    padding: 0;
     margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
-nav.nav-bar {
-    width: 100%;
-    height: 75px;
-    padding: 10px;
-    background: #fff;
-    border-bottom: 2px solid #ddd;
-}
-
 body{
-    background: #ddd;
-
+    width: 100vw;
+    position: absolute;
+    overflow-x: hidden;
 }
 
-.logo-container{
+.brand{
+    width: 100vw;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    padding: 10px;
+    gap: 5px;
+    background: #092635;
+    color: #fff;
+    font-family: cursive;
 }
 
 img{
@@ -28,369 +27,177 @@ img{
     height: 100%;
 }
 
-a{
-    text-decoration: none;
-}
-
-.nav-logo{
-    width:  55px;
-    height: 55px;
-    border-radius: 50%;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0px 0px 10px #ddd;
-    overflow: hidden;
-}
-
-.brand-name{
-    font-size: 18px;
-    color: #3a3a3a;
-    letter-spacing: 2px;
-    font-family: sans-serif, monospace;
-}
-
-main.main{
-    padding: 10px;
-    width: 100vw;
-    height: calc(100vh - 75px);
-    display: flex;
-    background: #ddd;
-    gap: 10px;
-}
-
-.split-main{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    flex-basis: 50%;
-}
-
-.brand-header{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px;
-}
-
 .brand-logo{
-    width:  120px;
-    height: 120px;
-    border-radius: 5px;
+    width:  70px;
+    height: 70px;
     overflow: hidden;
 }
 
-.main-cotent{
-    width:  100%;
-    height: 100%;
+.construction-animation{
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    padding: 15px;
+    background: #313131;
+    flex-wrap: wrap;
+    color: #fff;
+}
+
+.construction-animation .icon{
+    background: #f1f1f1;
+}
+
+.text{
+    padding: 5px;
+}
+
+.icon{
+    width:  70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    animation: spin 5s linear infinite;
+}
+
+@keyframes spin {
+    100%{
+        transform: rotate(360deg);
+    }
+}
+
+.main-container{
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 10px;
-    border-radius: 5px;
+    padding: 10px;
+    background: #313131;
 }
 
 .left-side{
-    background-image: url(/static/asset/images/hand-drawn-construction-background_23-2147734520.avif);
-    background-size: 100% 110%;
-    border-radius: 5px;
+    width: 300px;
 }
 
-.brand-text{
-    padding: 15px 10px;
-    line-height: 1.5;
-    text-align: justify;
-    backdrop-filter: blur(2px);
-}
-
-.features-main{
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-.split-title{
+.right-side {
+    height: 100%;
+    color: #fff;
     font-size: 18px;
-    color: #3a3a3a;
-    font-family: sans-serif;
     padding: 10px 20px;
-    background: #FFF;
-    border-radius: 5px;
+    line-height: 1.5;
+    white-space: wrap;
+    text-align: justify;
+    max-width: 680px;
+}
+
+.scroll-container{
+    padding: 15px 10px;
+    background: #292929;
+    overflow-x: scroll;
+}
+
+.crad-container{
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    gap: 25px;
+    padding: 10px 20px;
     position: relative;
+    min-width: 100%;
+    overflow-x: scroll;
 }
 
-.fas.fa-magic{
-    color: #c4c400;
+/* @keyframes scroll { */
+    /* 0% { transform: translateX(0); }
+    95% { transform: translateX(calc(-250px * 2)); }  */
+    /* 100%{transform: translateX(calc(-250px * 4));} */
+    /* Adjust the translateX value */
+/* } */
+
+.crad-container:hover .card{
+    animation-play-state: paused;
 }
 
-.heading{
-    font-weight: 800;
-}
 
-.features{
-    width: 100%;
-    min-height: 400px;
+.card {
+    min-width: 340px;
     padding: 10px;
-    background: #FFF;
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    background: #3a3a3ac7;
     border-radius: 5px;
-    position: relative;
-    background-image: url(/static/asset/images/all-in-one.jpg);
-    background-size: 100% 100%;
-    overflow: hidden;
+    list-style: none;
+    box-shadow: 0px 0px 5px #fff;
+    animation: scroll 7s linear 1s infinite; /* Adjust time as per requirement */
 }
 
-ul.card-container{
+.card-head{
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    position: relative;
-    padding: 10px;
-}
-
-.card{
-    display: none;
-}
-
-.card.active {
-    display: flex;
-    position: absolute;
-    width: 100%;
-    max-width: 100%;
-    border-radius: 5px;
-    color: #FFF;
-    backdrop-filter: blur(10px);
-    top: 15px;
-    left: 0;
-    animation: active-anime 1s ease-in forwards;
-}
-
-@keyframes active-anime {
-    0%{
-        opacity: 0;
-        top: 200px;
-        left: 200px;
-    }50%{
-        left: 5px;
-        top: 15px;
-        opacity: 1;
-    }
-    75%{
-        left: 90px;
-        top: 15px;
-        opacity: 1;
-    }
-    100%{
-        left: 5px;
-        top: 15px;
-        opacity: 1;
-    }
-}
-
-.card-background{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-
-
-.card-content{
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    border-radius: 5px;
-}
-
-.card-title{
-    width: 100%;
-    display: flex;
-    align-items: center;
+    /* flex-direction: column; */
     gap: 10px;
+    align-items: center;
     position: relative;
 }
 
-.card-icon{
-    width:  50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 2px solid #3a3a3a;
-    box-shadow: 0px 0px 5px #b7b9bc;
-    position: absolute;
+.card-image{
+    width: 180px;
+    height: 180px;
+    border-radius: 5px;
+    background: #fff;
 }
 
-.title{
+
+.card-title {
     font-size: 18px;
-    margin-left: 65px;
+    white-space: wrap;
+    position: absolute;
+    margin-left: 195px;
+    font-family: cursive;
+    font-weight: 900;
+    color: #ffffff;
 }
 
 .card-description{
-    margin-top: 15px;
-    padding: 10px;
-    white-space: wrap;
-    line-height: 1.5;
+    padding: 16px;
+    margin-top: 10px;
     text-align: justify;
+    line-height: 1.5;
+    color: #ffffff;
+    font-size: 12px;
+    font-family: sans-serif;
 }
 
 .first{
-    margin-left: 50px;
-    font-size: 28px;
+    margin-left: 20px;
+    font-size: 18px;
     font-weight: 900;
+    color: #da0000;
 }
 
-li{
-    list-style: none;
+/* Width and Height of the scrollbar track */
+::-webkit-scrollbar {
+    width:  5px;
+    height: 5px;
 }
 
-.indicators{
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 20px 10px;
-    backdrop-filter: blur(100px);
-}
-
-.features-bar{
-    width: 75px;
-    height: 6px;
-    background: #bdbdbd;
-    border-radius: 5px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.bar{
-    position: relative;
-    width: 0;
-    height: 100%;
-    left: 0;
-    background: blue;
+/* Background color of the scrollbar track */
+::-webkit-scrollbar-track {
     border-radius: 10px;
+  background-color: #f1f1f1;
 }
 
-.features-bar.active .bar{
-    animation: width-increase .5s ease-in forwards;
+/* Color of the scrollbar handle */
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+  background-color: #888;
 }
 
-.features-bar.done .bar{
-    animation: width-decrease .5s ease-in forwards;
+/* Rounded corners of the scrollbar handle */
+::-webkit-scrollbar-thumb:active {
+  background-color: #555;
 }
 
-@keyframes width-increase {
-    100%{
-        width: 100%;
-    }
+/* Change cursor on hover over scrollbar */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }
-
-.features-bar.done .bar{
-    width: 100%;
-    animation: width-decrease .5s ease-in forwards;
-}
-
-@keyframes width-decrease {
-    100%{
-        left: 100%;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .main{
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .split-main {
-        flex-basis: 100%;
-        height: 550px;
-    }
-
-    .left-side {
-        background-image: url(/static/asset/images/hand-drawn-construction-background_23-2147734520.avif);
-        background-size: 91% 117%;
-        border-radius: 5px;
-        width: 365px;
-    }
-}
-
-@media screen and (max-width:425px) {
-    .left-side {
-        background-image: url(/static/asset/images/hand-drawn-construction-background_23-2147734520.avif);
-        background-size: 112% 109%;
-        background-position-x: -20px;
-        border-radius: 5px;
-        width: 365px;
-    }
-
-}
-
-footer{
-    height: 120px;
-    width: 100%;
-    background: #3a3a3a;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    display:none;
-    justify-content: center;
-    border-radius: 20px 20px 0 0;
-}
-
-.list{
-    text-transform: uppercase;
-    color: aqua;
-    padding: 10px;
-    border-bottom: 1px solid #fff;
-}
-
-.developers-list{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 300px;
-    gap: 20px;
-}
-
-.developer, 
-.developername{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.developer{
-    flex-direction: column;
-    color: #fff;
-}
-
-.developer a{
-    color: #fff;
-}
-
-
