@@ -25,5 +25,45 @@ def convert_bytes(bytes):
         bytes /= 1024.0
     return f"{bytes:.2f} {unit}"
 
+
+import platform
+import os
+
+def print_system_info():
+    print("System Information:")
+    print(f"OS: {platform.system()} {platform.version()}")
+    print(f"OS Type: {platform.system()} {platform.architecture()}")
+    print(f"Python Version: {platform.python_version()}")
+    print("-" * 30)
+
+def print_user_info():
+    print("User Information:")
+    print(f"Current User: {os.getlogin()}")
+    try:
+        import pwd
+        user_info = pwd.getpwnam(os.getlogin())
+        print(f"User ID: {user_info.pw_uid}")
+        print(f"Group ID: {user_info.pw_gid}")
+        print(f"Home Directory: {user_info.pw_dir}")
+    except (ImportError, KeyError):
+        pass
+    print("-" * 30)
+
+def print_directory_list():
+    print("Directory List:")
+    current_directory = os.getcwd()
+    print(f"Current Directory: {current_directory}")
+    print("Contents:")
+    try:
+        with os.scandir(current_directory) as entries:
+            for entry in entries:
+                print(entry.name)
+    except Exception as e:
+        print(f"Error reading directory information: {e}")
+
+
 if __name__ == "__main__":
     print_storage_info()
+    print_system_info()
+    print_user_info()
+    print_directory_list()
