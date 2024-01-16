@@ -8,7 +8,7 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    plan_id = db.Column(db.Integer, db.ForeignKey('plan.id'), nullable=False)
+    text = db.Column(db.Integer, db.ForeignKey('Text.id'), nullable=False)
     plan = db.relationship('Plan', backref=db.backref('users', lazy=True))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
@@ -34,7 +34,7 @@ class File(db.Model):
     user = db.relationship('User', backref=db.backref('files', lazy=True))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
-class Plan(db.Model):
+class Text(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.String(200))

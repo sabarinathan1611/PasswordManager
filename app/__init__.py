@@ -35,7 +35,7 @@ def create_app():
     app.register_blueprint(view, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     
-    from .models import User,Admin,Plan,File
+    from .models import User,Admin,Text,File
     
     
     with app.app_context():
