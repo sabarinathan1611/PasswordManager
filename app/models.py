@@ -2,17 +2,33 @@ from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 
+# Text table
+class Text(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id= db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.String(200))
+
+class Password(db.Model):
+     id = db.Column(db.Integer, primary_key=True)
+     user_id= db.Column(db.Integer, db.ForeignKey('user.id'))
+     url=db.Column(db.String(150))
+     username=db.Column(db.String(150))
+     password = db.Column(db.String(100), nullable=False)
+
+
+
 # User table
-class User(db.Model):
+class User(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    text = db.Column(db.Integer, db.ForeignKey('Text.id'), nullable=False)
-    plan = db.relationship('Plan', backref=db.backref('users', lazy=True))
+    
+    text = db.relationship('Text', backref=db.backref('users', lazy=True))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
-    
+
 
 # Admin table
 class Admin(db.Model):
@@ -34,7 +50,3 @@ class File(db.Model):
     user = db.relationship('User', backref=db.backref('files', lazy=True))
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
-class Text(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-    description = db.Column(db.String(200))
