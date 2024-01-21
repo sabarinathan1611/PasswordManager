@@ -22,7 +22,7 @@ def login():
                 if check_password_hash(dbemail.password, password):
 
                     login_user(dbemail, remember=True)
-                return redirect(url_for('view.log'))
+                return redirect(url_for('view.home'))
 
     return render_template('login.html')
 
