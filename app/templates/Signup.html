@@ -1,16 +1,19 @@
+<!-- Signup.html -->
 {% extends "base.html" %}
-{% block title %} Signup {%endblock%}
+{% block title %} Signup {% endblock %}
 
 {% block content %}
-   <div class="container mt-5">
-    <form id="signupForm" action="/sign-up" class="col-md-6 offset-md-3" method="post" >
+<div class="container mt-5">
+    <form id="signupForm" action="{{ url_for('auth.sign_up') }}" class="col-md-6 offset-md-3" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <div class="form-group">
             <label for="FullName">User Name</label>
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                 </div>
-                <input type="text" name="fullname" class="form-control" id="FullName" required>
+                {{ form.fullname(class="form-control", id="FullName", required=True) }}
             </div>
         </div>
 
@@ -20,7 +23,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                 </div>
-                <input type="email" name="email" class="form-control" id="Email" required>
+                {{ form.email(class="form-control", id="Email", required=True) }}
             </div>
         </div>
 
@@ -30,7 +33,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 </div>
-                <input type="password" name="password" class="form-control" id="Password" required>
+                {{ form.password(class="form-control", id="Password", required=True) }}
             </div>
         </div>
 
@@ -40,11 +43,11 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 </div>
-                <input type="password" name="confirmPassword" class="form-control" id="ConfirmPassword" required>
+                {{ form.confirm_password(class="form-control", id="ConfirmPassword", required=True) }}
             </div>
         </div>
 
-        <button type="submit" onsubmit="return validateForm()"class="btn btn-primary">Sign Up</button>
+        <button type="submit" onsubmit="return validateForm()" class="btn btn-primary">Sign Up</button>
     </form>
 </div>
 
@@ -56,9 +59,5 @@
 <!-- Add Font Awesome JS (if needed) -->
 <!-- <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script> -->
 
-<script src="/static/js/validateForm.js">
-</script>
+<script src="/static/js/validateForm.js"></script>
 {% endblock %}
-
-
-

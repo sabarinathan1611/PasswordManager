@@ -13,3 +13,9 @@ def home():
 @login_required
 def log():
     return current_user.email
+
+    
+@view.route('/admin',methods=['POST','GET'])
+@login_required
+def admin():
+    render_template ('admin.html')

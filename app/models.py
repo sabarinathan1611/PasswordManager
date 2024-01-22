@@ -23,13 +23,9 @@ class User(db.Model, UserMixin):
     texts = db.relationship('Text', backref='user', lazy=True)
     files = db.relationship('File', backref='user', lazy=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
+    role =  db.Column(db.String(100),nullable=False,default='user')
 
-class Admin(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
+
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
