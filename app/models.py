@@ -1,7 +1,7 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
-
+import secrets
 class Text(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -24,6 +24,9 @@ class User(db.Model, UserMixin):
     files = db.relationship('File', backref='user', lazy=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     role =  db.Column(db.String(100),nullable=False,default='user')
+    is_verified = db.Column(db.Boolean, default=False)
+    verification_token = db.Column(db.String(32), default=secrets.token_urlsafe)
+
 
 
 

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %} Admin {% endblock %}
+{% block content %}
+   <div class="container mt-5">
+        <h1 class="mb-4">Admin Dashboard</h1>
+
+        {% if storage_info %}
+            <div class="mb-4">
+                <h2>Storage Information</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Mount Point</th>
+                            <th>Total</th>
+                            <th>Used</th>
+                            <th>Free</th>
+                            <th>Percentage Used</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for info in storage_info %}
+                            <tr>
+                                <td>{{ info['Mount Point'] }}</td>
+                                <td>{{ info['Total'] }}</td>
+                                <td>{{ info['Used'] }}</td>
+                                <td>{{ info['Free'] }}</td>
+                                <td>{{ info['Percentage Used'] }}%</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if system_info %}
+            <div>
+                <h2>System Information</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            {% for key, value in system_info.items() %}
+                                <li class="list-group-item"><strong>{{ key }}:</strong> {{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

@@ -1,3 +1,16 @@
 {% extends "base.html" %}
 {% block title %} Home {% endblock %}
-{% block content %} Welcome : {{current_user.username}}   {% endblock %}
+{% block content %} 
+<h1>Name : {{current_user.username}} 
+</h1>
+<br>
+
+<h1>Role: {{current_user.role}} </h1> <br> 
+
+<h1>verified:{{current_user.is_verified}}</h1>
+
+<br>
+
+<br>
+<a class="btn btn-primary" href="{{url_for('auth.logout')}}">LOGOUT</a>
+{% endblock %}
