@@ -5,7 +5,9 @@
 {% block content %}
    <div class="container mt-5">
     <form id="loginForm" action="{{ url_for('auth.login') }}" class="col-md-6 offset-md-3" method="post">
-        {{ form.hidden_tag() }}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
 
         <div class="form-group">
             <label for="Email">Email</label>

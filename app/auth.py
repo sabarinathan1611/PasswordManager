@@ -8,13 +8,14 @@ from .forms import LoginForm, SignUpForm
 from .functions import send_verification_email
 from .config import Config 
 
-auth = Blueprint('auth', __name__)
 
+auth = Blueprint('auth', __name__)
 @auth.route('/login', methods=['POST', 'GET'])
 def login():
     form = LoginForm()
 
     if request.method == 'POST' and form.validate_on_submit():
+
         email = form.email.data
         password = form.password.data
 

@@ -6,6 +6,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
 from .config import get_config
 import os
+from flask_cors import CORS
 
 db = SQLAlchemy()
 mail = Mail()
@@ -27,6 +28,8 @@ def create_app(mode='default'):
 
     # Initialize CSRF protection
     csrf = CSRFProtect(app)
+    print("csrf:",csrf)
+    CORS(app)
 
     # Initialize Flask-Mail
     mail.init_app(app)
@@ -37,6 +40,7 @@ def create_app(mode='default'):
 
     app.register_blueprint(view, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+
 
     # Import models and create tables
     from .models import User, Text, File

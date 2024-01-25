@@ -3,6 +3,7 @@ import secrets
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', secrets.token_hex(16))
+    print("SECRET_KEY :",SECRET_KEY)
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI', 'sqlite:///database.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
@@ -12,8 +13,11 @@ class Config:
     MAIL_PORT = 465
     MAIL_USE_SSL = True
     MAIL_USERNAME = os.environ.get('GMAIL_USERNAME')  # Use a custom environment variable for Gmail username
+    print("MAIL_USERNAME :",MAIL_USERNAME)
     MAIL_PASSWORD = os.environ.get('GMAIL_PASSWORD')  # Use a custom environment variable for Gmail app-specific password
+    print("MAIL_PASSWORD:",MAIL_PASSWORD)
     AdminMail=os.environ.get('ADMINMAIL')
+    print("AdminMail:",AdminMail)
 
 
 class DevelopmentConfig(Config):
