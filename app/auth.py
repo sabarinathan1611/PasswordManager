@@ -1,5 +1,5 @@
 # auth.py
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db, mail
@@ -7,28 +7,36 @@ from .models import User
 from .forms import LoginForm, SignUpForm
 from .functions import send_verification_email
 from .config import Config 
+from flask_cors import cross_origin
 
-
+ 
 auth = Blueprint('auth', __name__)
-@auth.route('/login', methods=['POST', 'GET'])
+
+
+
+@auth.route('/login', methods=['GET', 'POST'])
+@cross_origin('*')
 def login():
     form = LoginForm()
 
-    if request.method == 'POST' and form.validate_on_submit():
-
+    
+        
+ 
+    if form.validate_on_submit():
         email = form.email.data
-        password = form.password.data
+        password = form.password.data   
 
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
-            flash('Login successful!', 'success')
             return redirect(url_for('view.home'))
+            
         else:
-            flash('Login unsuccessful. Please check your email and password.', 'danger')
+            flash("Login unsuccessful. Please check your email and password.")
 
     return render_template('login.html', form=form)
+
 
 @auth.route('/sign-up', methods=['POST', 'GET'])
 def sign_up():

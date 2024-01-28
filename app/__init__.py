@@ -8,6 +8,7 @@ from .config import get_config
 import os
 from flask_cors import CORS
 
+
 db = SQLAlchemy()
 mail = Mail()
 DB_NAME = "database.db"
@@ -17,6 +18,10 @@ def create_app(mode='default'):
 
     # Load configuration from config file
     app.config.from_object(get_config(mode))
+    
+    #app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    #app.config['SESSION_COOKIE_HTTPOLY']=True
+
 
     # Configure the upload folder
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +34,8 @@ def create_app(mode='default'):
     # Initialize CSRF protection
     csrf = CSRFProtect(app)
     print("csrf:",csrf)
-    CORS(app)
+    cors = CORS(app, resources={r"/*": {"origins": "http://192.168.43.53", "supports_credentials": True}})
+
 
     # Initialize Flask-Mail
     mail.init_app(app)

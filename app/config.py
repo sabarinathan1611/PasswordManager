@@ -7,6 +7,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI', 'sqlite:///database.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
+    SESSION_COOKIE_HTTPOLY=True
     SESSION_COOKIE_SECURE = True
 
     MAIL_SERVER = 'smtp.gmail.com'
