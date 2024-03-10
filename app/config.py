@@ -8,7 +8,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
     SESSION_COOKIE_HTTPOLY=True
-    SESSION_COOKIE_SECURE = True
+    #SESSION_COOKIE_SECURE = True
 
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465
@@ -19,6 +19,11 @@ class Config:
     print("MAIL_PASSWORD:",MAIL_PASSWORD)
     AdminMail=os.environ.get('ADMINMAIL')
     print("AdminMail:",AdminMail)
+    data_key = os.environ.get('KEY').encode() if os.environ.get('KEY') else None
+    print("data_key:",data_key)
+    data_iv=os.environ.get('KEY').encode() if os.environ.get('IV') else None
+
+
 
 
 class DevelopmentConfig(Config):

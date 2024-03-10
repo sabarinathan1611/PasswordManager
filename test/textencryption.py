@@ -1,108 +1,113 @@
-import hashlib
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES, PKCS1_OAEP
+from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
-import configparser
+from Crypto.Protocol.KDF import PBKDF2
+import hmac
+import hashlib
+import base64
 
-class CryptoBase:
-    def __init__(self, config_file='config.ini'):
-        """
-        Initialize the CryptoBase class.
+class CryptoAES:
+    def __init__(self, key):
+        self.key = key
 
-        :param config_file: Path to the configuration file.
-        """
-        self.config_file = config_file
+    def encrypt_message(self, message):
+        nonce = get_random_bytes(12)
+        cipher = AES.new(self.key, AES.MODE_GCM, nonce=nonce)
+        ciphertext, tag = cipher.encrypt_and_digest(message.encode())
+        return ciphertext, cipher.nonce, tag
 
-    def read_password_from_config(self):
-        """
-        Read the encryption password from the configuration file.
+    def decrypt_message(self, nonce, ciphertext, tag):
+        cipher = AES.new(self.key, AES.MODE_GCM, nonce=nonce)
+        plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+        return plaintext.decode()
 
-        :return: Password for encryption.
-        """
-        config = configparser.ConfigParser()
-        config.read(self.config_file)
-        password = config.get('Encryption', 'password')
-        return password
+def derive_key(password, salt, key_length=32):
+    key = PBKDF2(password, salt, dkLen=key_length)
+    return key
 
-    def derive_key(self, password, salt, iterations=100000, key_length=32):
-        """
-        Derive a key from the password using PBKDF2.
+def generate_random_nonce():
+    return get_random_bytes(12)
 
-        :param password: Password to derive the key from.
-        :param salt: Salt used in the key derivation.
-        :param iterations: Number of iterations for PBKDF2.
-        :param key_length: Length of the derived key.
-        :return: Derived key.
-        """
-        key = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, iterations, key_length)
-        return key
+def generate_mac(key, data):
+    return hmac.new(key, data, hashlib.sha256).digest()
 
-    def pad_data(self, data):
-        """
-        Pad the data to match the block size of the encryption algorithm.
+def verify_mac(key, mac, data):
+    expected_mac = generate_mac(key, data)
+    return hmac.compare_digest(expected_mac, mac)
 
-        :param data: Data to be padded.
-        :return: Padded data.
-        """
-        block_size = AES.block_size
-        padding = block_size - (len(data) % block_size)
-        if isinstance(data, str):
-            data = data.encode()
-        return data + bytes([padding] * padding)
+def generate_rsa_key_pair():
+    key = RSA.generate(2048)
+    return key.publickey(), key
 
-    def unpad_data(self, data):
-        """
-        Unpad the data after decryption.
+def encrypt_symmetric_key(key, public_key):
+    cipher_rsa = PKCS1_OAEP.new(public_key)
+    encrypted_key = cipher_rsa.encrypt(key)
+    return encrypted_key
 
-        :param data: Padded data.
-        :return: Unpadded data.
-        """
-        padding = data[-1]
-        return data[:-padding]
+def decrypt_symmetric_key(encrypted_key, private_key):
+    cipher_rsa = PKCS1_OAEP.new(private_key)
+    key = cipher_rsa.decrypt(encrypted_key)
+    return key
 
-class Encryption(CryptoBase):
-    def encrypt_text(self, plaintext):
-        """
-        Encrypt the input text using AES in CBC mode.
+class CryptoRSA:
+    def __init__(self, public_key_path, private_key_path):
+        with open(public_key_path, 'rb') as f:
+            self.public_key = RSA.import_key(f.read())
+        with open(private_key_path, 'rb') as f:
+            self.private_key = RSA.import_key(f.read())
 
-        :param plaintext: Text to be encrypted.
-        :return: Encrypted data.
-        """
-        password = self.read_password_from_config()
-        salt = get_random_bytes(16)  # Generate a random salt for each encryption
-        key = self.derive_key(password, salt)
-        iv = get_random_bytes(AES.block_size)  # Generate a random IV for CBC mode
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        encrypted_data = cipher.encrypt(self.pad_data(plaintext))
-        return salt + iv + encrypted_data
+    def encrypt_message(self, message):
+        session_key = get_random_bytes(16)
+        encrypted_key = encrypt_symmetric_key(session_key, self.public_key)
 
-class Decryption(CryptoBase):
-    def decrypt_text(self, ciphertext):
-        """
-        Decrypt the input ciphertext using AES in CBC mode.
+        aes_cipher = CryptoAES(session_key)
+        ciphertext, nonce, tag = aes_cipher.encrypt_message(message)
 
-        :param ciphertext: Encrypted data.
-        :return: Decrypted text.
-        """
-        password = self.read_password_from_config()
-        salt = ciphertext[:16]  # Extract the salt from the ciphertext
-        iv = ciphertext[16:32]  # Extract the IV from the ciphertext
-        key = self.derive_key(password, salt)
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        decrypted_data = self.unpad_data(cipher.decrypt(ciphertext[32:])).decode()
-        return decrypted_data
+        return encrypted_key, base64.b64encode(nonce), base64.b64encode(tag), base64.b64encode(ciphertext)
 
-# Example usage
-input_text = input('Original Text:')
-encryption_instance = Encryption()
-decryption_instance = Decryption()
+    def decrypt_message(self, encrypted_key, nonce_b64, tag_b64, ciphertext_b64):
+        print("Encrypted Key Length:", len(encrypted_key))  # Debugging
+        encrypted_key = base64.b64decode(encrypted_key)
+        print("Decoded Encrypted Key Length:", len(encrypted_key))  # Debugging
 
-# Encrypt text
-encrypted_text = encryption_instance.encrypt_text(input_text)
+        nonce = base64.b64decode(nonce_b64)
+        tag = base64.b64decode(tag_b64)
+        ciphertext = base64.b64decode(ciphertext_b64)
 
-# Decrypt text
-decrypted_text = decryption_instance.decrypt_text(encrypted_text)
+        session_key = decrypt_symmetric_key(encrypted_key, self.private_key)
 
-# Display results
-print("Original Text:", input_text)
-print("Encrypted Text:", encrypted_text)
-print("Decrypted Text:", decrypted_text)
+        aes_cipher = CryptoAES(session_key)
+        decrypted_message = aes_cipher.decrypt_message(nonce, ciphertext, tag)
+        return decrypted_message
+
+def generate_key_pair(public_key_path, private_key_path):
+    public_key, private_key = generate_rsa_key_pair()
+    with open(public_key_path, 'wb') as f:
+        f.write(public_key.export_key())
+    with open(private_key_path, 'wb') as f:
+        f.write(private_key.export_key())
+
+def main():
+    public_key_path = 'public_key.pem'
+    private_key_path = 'private_key.pem'
+
+    generate_key_pair(public_key_path, private_key_path)
+    print("Public and private key pair generated successfully.")
+
+    rsa_instance = CryptoRSA(public_key_path, private_key_path)
+
+    message = input("Enter the message to encrypt: ")
+
+    # Encrypt the message
+    encrypted_key, nonce, tag, ciphertext = rsa_instance.encrypt_message(message)
+    print("Encrypted Key:", base64.b64encode(encrypted_key))
+    print("Nonce:", nonce)
+    print("Tag:", tag)
+    print("Ciphertext:", ciphertext)
+
+    # Decrypt the message
+    decrypted_message = rsa_instance.decrypt_message(encrypted_key, nonce, tag, ciphertext)
+    print("Decrypted Message:", decrypted_message)
+
+if __name__ == "__main__":
+    main()

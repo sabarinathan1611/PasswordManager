@@ -12,8 +12,9 @@
 <body class="container">
     <h2 class="mt-4">Login</h2>
 
-    <form method="post">
-        {{ form.hidden_tag() }}
+    <form action="/login" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <!-- {{ form.hidden_tag() }} -->
         <div class="mb-3">
             <label for="username" class="form-label">Username:</label>
             {{ form.email(class="form-control") }}

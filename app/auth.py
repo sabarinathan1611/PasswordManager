@@ -9,13 +9,14 @@ from .functions import send_verification_email
 from .config import Config 
 from flask_cors import cross_origin
 
+
  
 auth = Blueprint('auth', __name__)
 
 
 
 @auth.route('/login', methods=['GET', 'POST'])
-@cross_origin('*')
+
 def login():
     form = LoginForm()
 
@@ -36,6 +37,9 @@ def login():
             flash("Login unsuccessful. Please check your email and password.")
 
     return render_template('login.html', form=form)
+
+
+
 
 
 @auth.route('/sign-up', methods=['POST', 'GET'])
