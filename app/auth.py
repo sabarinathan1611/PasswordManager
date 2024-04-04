@@ -8,11 +8,12 @@ from .forms import LoginForm, SignUpForm
 from .functions import send_verification_email
 from .config import Config 
 from flask_cors import cross_origin
+from .dataencryption import AESCipher 
 
 
  
 auth = Blueprint('auth', __name__)
-
+aes_cipher = AESCipher()
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -26,8 +27,10 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data   
-
-        user = User.query.filter_by(email=email).first()
+        print("Email",email)
+        encrypted_email = aes_cipher.encrypt_data(email)
+        print("encrypted_email:",encrypted_email)
+        user = User.query.filter_by(email=encrypted_email).first()
 
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
@@ -52,14 +55,18 @@ def sign_up():
         name = form.fullname.data
         hashed_password = generate_password_hash(password)
 
-        already_in = User.query.filter_by(email=email).first()
+        
+        encrypted_name=aes_cipher.encrypt_data(data=name)
+        encrypted_email=aes_cipher.encrypt_data(data=email)
+
+        already_in = User.query.filter_by(email=encrypted_email).first()
         if already_in:
             flash('Email address is already in use.', 'danger')
             return redirect(url_for('auth.sign_up'))
         else:
             if email == Config.AdminMail:
                 print("Admin Email:",Config.AdminMail)
-                user = User(email=email, password=hashed_password, username=name,is_verified=True,role='admin')
+                user = User(email=encrypted_email, password=hashed_password, username=encrypted_name,is_verified=True,role='admin')
                 db.session.add(user)
                 db.session.commit()
 
@@ -67,8 +74,8 @@ def sign_up():
                 flash('Admin Account created successfully', 'success')
                 return redirect(url_for('view.home'))
             else:
-                print("Admin Email:",Config.AdminMail)
-                user = User(email=email, password=hashed_password, username=name)
+                
+                user = User(email=encrypted_email, password=hashed_password, username=encrypted_name)
                 db.session.add(user)
                 db.session.commit()
 
@@ -86,6 +93,7 @@ def verify_email(verification_token):
     if user:
         # Mark the user as verified
         user.is_verified = True
+        user.verification_token=None
         db.session.commit()
 
         # Log in the user after successful verification

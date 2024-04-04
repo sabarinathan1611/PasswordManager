@@ -9,14 +9,15 @@ import logging
 from flask  import current_app as app
 from cryptography.fernet import Fernet
 import os
-
-
+from .dataencryption import AESCipher 
+aes_cipher = AESCipher()
 def send_verification_email(user):
     verification_link = url_for('auth.verify_email', verification_token=user.verification_token, _external=True)
     subject = 'Verify Your Email for Web App'
     body = f'Click the following link to verify your email: {verification_link}'
-    
-    send_email(user.email, subject, body)
+    email=aes_cipher.decrypt_data(user.email)
+    print("Email")
+    send_email(email, subject, body)
 
 def send_email(to, subject, body):
     sender=os.environ.get('GMAIL_USERNAME')

@@ -6,10 +6,11 @@ from .sysinfo import *
 from .functions import dict_to_string,string_to_dict,generate_filename
 from .forms import *
 from flask  import current_app as app
-from .TextEncryption import text_encryption
-from .sha import *
+from .TextEncryption import text_encryption,text_decryption
+from .dataencryption import *
 from .config import Config
 import os
+aes_cipher = AESCipher()
 view = Blueprint('view', __name__)
 
 
@@ -56,28 +57,33 @@ def store_pass():
         string=dict_to_string(data)
         public_key_path=keypath+generate_filename()
         print(public_key_path)
+        encrypted_public=aes_cipher.encrypt_data(public_key_path)
         private_key_path=keypath+generate_filename()
         print(private_key_path)
+        encrypted_private=aes_cipher.encrypt_data(private_key_path)
+
         encrypted_session_key, iv, ciphertext = text_encryption(public_key_path, private_key_path, string)
-        newtext =Text(user_id=current_user.id,encrypted_Key=encrypted_session_key,nonce=iv,ciphertext=ciphertext,private_key_path=private_key_path,public_key_path=public_key_path,store_type="password")
+        stype=aes_cipher.encrypt_data("password")
+        newtext =Text(user_id=current_user.id,encrypted_Key=encrypted_session_key,nonce=iv,ciphertext=ciphertext,private_key_path=encrypted_private,public_key_path=encrypted_public,store_type=stype)
         db.session.add(newtext)
         db.session.commit()
-        
-
-
-
-        
     return redirect(url_for('view.home'))
-        
-@view.route('/test',methods=['GET'])
-def test():
-    key = os.environ.get('KEY')
-    iv=os.environ.get('IV')
-    data = "s234"
-    encrypted_data, iv = encrypt_data(data, key,iv)
-    print("Encrypted data:", encrypted_data)
-    print("IV:", iv)
 
-    decrypted_data = decrypt_data(encrypted_data, iv, key)
-    print("Decrypted data:", decrypted_data) 
-    return redirect('/')
+@view.route('/showpass',methods=['POST','GET'])
+def showpass():
+    if current_user.is_authenticated:
+        passwords = Text.query.filter_by(user_id=current_user.id)
+        data=[]
+        for  password in passwords:
+            decrypted_message=text_decryption(public_key_path=aes_cipher.decrypt_data(password.public_key_path),private_key_path=aes_cipher.decrypt_data(password.private_key_path),encrypted_session_key=password.encrypted_Key,iv=password.nonce,ciphertext=password.ciphertext)
+            data.append({
+                "id":password.id,
+                "data":string_to_dict(decrypted_message),
+                "store_type":aes_cipher.decrypt_data(password.store_type)
+                })
+        print("DATA:",data,'\n')
+        
+        return render_template('passwords.html', data=data)
+    else:
+        return redirect('/')
+

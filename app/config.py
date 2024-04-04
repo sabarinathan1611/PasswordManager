@@ -8,7 +8,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
     SESSION_COOKIE_HTTPOLY=True
-    #SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = False
 
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465
