@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
 from . import db
-from .models import User,Text
+from .models import User,Text,File
 from flask_login import login_required,current_user
 from .sysinfo import *
 from .functions import dict_to_string,string_to_dict,generate_filename
@@ -10,19 +10,25 @@ from .TextEncryption import text_encryption,text_decryption
 from .dataencryption import *
 from .config import Config
 import os
+from werkzeug.utils import secure_filename
+import threading
+import base64
+from .fileencryption import *
 aes_cipher = AESCipher()
+
 view = Blueprint('view', __name__)
 
 
 @view.route('/',methods=['POST','GET'])
 @login_required
 def home():
+    fileform=FileForm()
     form = PasswordForm()
     if current_user.is_verified != True:
         
         return redirect(url_for('auth.logout'))
 
-    return render_template('index.html',form=form)
+    return render_template('index.html',form=form,fileform=fileform)
 
 
 
@@ -44,6 +50,7 @@ def admin():
     return render_template ('admin.html',storage_info=storage_info,system_info=system_info)
 
 @view.route('/password',methods=['POST'])
+@login_required
 def store_pass():
     form = PasswordForm()
     if request.method == 'POST' and form.validate_on_submit():
@@ -55,10 +62,10 @@ def store_pass():
         data={'url':url,'name':name,'username':username,'password':password,'keypath':keypath}
         print("DATA: ",type(data))
         string=dict_to_string(data)
-        public_key_path=keypath+generate_filename()
+        public_key_path=keypath+generate_filename('der')
         print(public_key_path)
         encrypted_public=aes_cipher.encrypt_data(public_key_path)
-        private_key_path=keypath+generate_filename()
+        private_key_path=keypath+generate_filename('der')
         print(private_key_path)
         encrypted_private=aes_cipher.encrypt_data(private_key_path)
 
@@ -70,6 +77,7 @@ def store_pass():
     return redirect(url_for('view.home'))
 
 @view.route('/showpass',methods=['POST','GET'])
+@login_required
 def showpass():
     if current_user.is_authenticated:
         passwords = Text.query.filter_by(user_id=current_user.id)
@@ -85,5 +93,71 @@ def showpass():
         
         return render_template('passwords.html', data=data)
     else:
-        return redirect('/')
+        return redirect(url_for('view.home'))
 
+@view.route('/uploadfile', methods=['POST'])
+@login_required
+def fileuplod():
+    form = FileForm()
+    if form.validate_on_submit():
+        file = form.file.data
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], generate_filename('file')+filename)
+        filemimetype=file.mimetype
+        file.save(filepath)
+        #print("File:", filepath)
+        keypath=app.config['KEY_FOLDER']
+        public_key_path=keypath+generate_filename('der')
+        private_key_path=keypath+generate_filename('der')
+        encryption_instance = File_Encryption()
+        key_pair = encryption_instance.generate_key_pair()
+        public_key = key_pair.publickey()
+        private_key = key_pair
+        encryption_instance.save_key_to_file(public_key, public_key_path)
+        encryption_instance.save_key_to_file(private_key, private_key_path)
+        public_key = encryption_instance.load_key_from_file(public_key_path)
+        output=os.path.join(app.config['UPLOAD_FOLDER'], generate_filename('file')+'.bin')
+        print("\n\n\n",output,'\n',type(output),'\n\n')
+        encryption_instance.encrypt_file(filepath,output, public_key)
+
+        addnew=File(filename=aes_cipher.encrypt_data(filename),filetype=aes_cipher.encrypt_data(file.mimetype),filepath=aes_cipher.encrypt_data(output),private_key_path=aes_cipher.encrypt_data(private_key_path),public_key_path=aes_cipher.encrypt_data(public_key_path),user_id=current_user.id,mimetype=aes_cipher.encrypt_data(file.mimetype))
+        db.session.add(addnew)
+        db.session.commit()
+        thread = threading.Thread(target=os.remove, args=(filepath,))
+        thread.start()
+
+    return filename
+
+
+@view.route('/decrypt')
+@login_required
+def decrypt_file():
+# Get all files associated with the current user
+    user_files = current_user.files  # Assuming 'files' is the relationship between User and File models
+
+    # Initialize a list to store image data
+    image_data_list = []
+
+    # Decrypt and encode each file's data
+    for file in user_files:
+        file_path = aes_cipher.decrypt_data(file.filepath)
+        private_key_path = aes_cipher.decrypt_data(file.private_key_path)
+
+        # Decrypt the file
+        decryption_instance = File_Decryption()
+        private_key = decryption_instance.load_key_from_file(private_key_path)
+        decrypted_data = decryption_instance.decrypt_file(file_path, private_key)
+
+        # Base64 encode the decrypted image data
+        decrypted_data_base64 = base64.b64encode(decrypted_data).decode('utf-8')
+
+        mimetype = aes_cipher.decrypt_data(file.mimetype)
+
+        # Append the image data to the list
+        image_data_list.append({
+            'decrypted_data_base64': decrypted_data_base64,
+            'mimetype': mimetype
+        })
+
+    # Pass the list of image data to the template
+    return render_template('decrypted_image.html', image_data_list=image_data_list)

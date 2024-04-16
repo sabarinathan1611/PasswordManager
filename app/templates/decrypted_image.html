@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Images</title>
+</head>
+<body>
+    <h2>User Images</h2>
+    {% for image_data in image_data_list %}
+        <img src="data:{{ image_data['mimetype'] }};base64,{{ image_data['decrypted_data_base64'] }}" alt="Decrypted Image">
+        <a href="data:{{ image_data['mimetype'] }};base64,{{ image_data['decrypted_data_base64'] }}" download>Download</a>
+    {% endfor %}
+</body>
+</html>

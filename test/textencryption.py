@@ -96,7 +96,7 @@ def main():
 
     rsa_instance = CryptoRSA(public_key_path, private_key_path)
 
-    message = input("Enter the message to encrypt: ")
+    message = "Tst"
 
     # Encrypt the message
     encrypted_key, nonce, tag, ciphertext = rsa_instance.encrypt_message(message)

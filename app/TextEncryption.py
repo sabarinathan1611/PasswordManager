@@ -93,3 +93,8 @@ def text_decryption(public_key_path, private_key_path, encrypted_session_key, iv
     
     return decrypted_message
 
+"""
+real    0m1.455s
+user    0m1.340s
+sys 0m0.059s
+"""

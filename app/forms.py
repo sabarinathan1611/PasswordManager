@@ -22,10 +22,13 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+
 class PasswordForm(FlaskForm):
     url = StringField('URL', validators=[DataRequired()])
     name = StringField('Name', validators=[DataRequired()])
     username = StringField('User Name', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     
-    
+class FileForm(FlaskForm):
+    file = FileField('Upload File', validators=[DataRequired()])
+    submit = SubmitField('Submit')

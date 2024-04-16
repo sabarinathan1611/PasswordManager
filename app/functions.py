@@ -50,9 +50,12 @@ def string_to_dict(input_string):
     """
     return json.loads(input_string)
 
-def generate_filename():
-    return  str(uuid.uuid4()) + '.der'
-    
+def generate_filename(types):
+    if types == 'der':
+        return  str(uuid.uuid4()) + '.der'
+    elif types == 'file':
+
+        return  str(uuid.uuid4())
 
 
 

@@ -19,7 +19,7 @@ class CryptoBase:
     def generate_aes_key(self):
         return get_random_bytes(16)  # 128-bit AES key
 
-class Encryption(CryptoBase):
+class File_Encryption(CryptoBase):
     def encrypt_file(self, input_filename, output_filename, public_key):
         # Generate a random AES key
         aes_key = self.generate_aes_key()
@@ -41,8 +41,8 @@ class Encryption(CryptoBase):
             file.write(tag)
             file.write(encrypted_data)
 
-class Decryption(CryptoBase):
-    def decrypt_file(self, input_filename, output_filename, private_key):
+class File_Decryption(CryptoBase):
+    def decrypt_file(self, input_filename, private_key):
         # Read encrypted AES key, nonce, tag, and data from input file
         with open(input_filename, 'rb') as file:
             encrypted_aes_key = file.read(256)  # RSA encrypted AES key is 256 bytes
@@ -57,30 +57,35 @@ class Decryption(CryptoBase):
         # Decrypt the data using AES
         aes_cipher = AES.new(aes_key, AES.MODE_EAX, nonce=nonce)
         decrypted_data = aes_cipher.decrypt_and_verify(encrypted_data, tag)
+        return decrypted_data
+
+
 
         # Write decrypted data to output file
-        with open(output_filename, 'wb') as file:
-            file.write(decrypted_data)
+        # with open(output_filename, 'wb') as file:
+        #     file.write(decrypted_data)
 
 # Example usage
-encryption_instance = Encryption()
-decryption_instance = Decryption()
+# encryption_instance = File_Encryption()
+# decryption_instance = File_Decryption()
 
-# Generate RSA key pair
-key_pair = encryption_instance.generate_key_pair()
-public_key = key_pair.publickey()
-private_key = key_pair
+# # Generate RSA key pair
+# key_pair = encryption_instance.generate_key_pair()
+# public_key = key_pair.publickey()
+# private_key = key_pair
 
-# Save keys to files in DER format
-encryption_instance.save_key_to_file(public_key, 'public_key.der')
-encryption_instance.save_key_to_file(private_key, 'private_key.der')
 
-# Load keys from files
-public_key = encryption_instance.load_key_from_file('public_key.der')
-private_key = encryption_instance.load_key_from_file('private_key.der')
 
-# Encrypt a file
-encryption_instance.encrypt_file('Test.png', 'encrypted_file.bin', public_key)
+# # Save keys to files in DER format
+# encryption_instance.save_key_to_file(public_key, 'public_key.der')
+# encryption_instance.save_key_to_file(private_key, 'private_key.der')
 
-# Decrypt the file
-decryption_instance.decrypt_file('encrypted_file.bin', 'decrypted_file.png', private_key)
+# # Load keys from files
+# public_key = encryption_instance.load_key_from_file('public_key.der')
+# private_key = encryption_instance.load_key_from_file('private_key.der')
+
+# # Encrypt a file
+# encryption_instance.encrypt_file('Test.png', 'encrypted_file.bin', public_key)
+
+# # Decrypt the file
+# decryption_instance.decrypt_file('encrypted_file.bin', 'decrypted_file.png', private_key)

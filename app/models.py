@@ -33,4 +33,5 @@ class File(db.Model):
     private_key_path= db.Column(db.String(200), nullable=False)
     public_key_path= db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    mimetype=db.Column(db.String(200), nullable=False)
     date = db.Column(db.DateTime(timezone=True), default=func.now())

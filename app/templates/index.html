@@ -33,7 +33,21 @@
 </form>
 
 </div>
+<br>
+<br>
 
+<form id="" method="post" action="/uploadfile" enctype="multipart/form-data">
+    {{ fileform.csrf_token }}
+    <div class="form-group">
+        {{ fileform.file.label(class="form-control-label") }}
+        {{ fileform.file(class="form-control-file") }}
+    </div>
+    <div class="form-group">
+        {{ fileform.submit(class="btn btn-primary") }}
+    </div>
+</form>
+
+    
 <script>
   // Function to generate a random password
   function generateRandomPassword(length) {

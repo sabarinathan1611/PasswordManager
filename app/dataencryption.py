@@ -32,12 +32,19 @@ class AESCipher:
         return self.unpad_data(decrypted_data).decode()
 
 # Example usage
-aes_cipher = AESCipher()
+#aes_cipher = AESCipher()
 
-data = "vsabarinathan1611@gamil.com"
-encrypted_data = aes_cipher.encrypt_data(data)
-print("Encrypted data:", encrypted_data)
+# data = "vsabarinathan1611@gamil.com"
+# encrypted_data = aes_cipher.encrypt_data(data)
+# print("Encrypted data:", encrypted_data)
 
 
-decrypted_data = aes_cipher.decrypt_data(encrypted_data)
-print("Decrypted data:", decrypted_data)
+# decrypted_data = aes_cipher.decrypt_data(encrypted_data)
+# print("Decrypted data:", decrypted_data)
+"""
+Time: 
+real    0m0.372s
+user    0m0.258s
+sys 0m0.110s
+
+"""

@@ -22,9 +22,9 @@ def create_app(mode='default'):
 
     # Configure the upload folder
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-    UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/uploads')
+    UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/uploads/')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    KEY_FOLDER = os.path.join(app.root_path, 'static/key')
+    KEY_FOLDER = os.path.join(app.root_path, 'static/key/')
     app.config['KEY_FOLDER'] = KEY_FOLDER
 
     # Initialize database
