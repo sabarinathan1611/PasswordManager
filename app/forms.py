@@ -9,6 +9,7 @@ class SignUpForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Create Account')
 
     def validate_email(form, field):
         try:
@@ -32,3 +33,9 @@ class PasswordForm(FlaskForm):
 class FileForm(FlaskForm):
     file = FileField('Upload File', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class EditPasswordForm(FlaskForm):
+    url = StringField('URL', validators=[DataRequired()], default='')
+    name = StringField('Name', validators=[DataRequired()], default='')
+    username = StringField('User Name', validators=[DataRequired()], default='')
+    password = PasswordField('Password', validators=[DataRequired()], default='')

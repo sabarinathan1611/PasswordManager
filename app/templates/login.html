@@ -1,32 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
+    <link rel="stylesheet" href="static/css/login.css" />
+  </head>
+  <body>
+    <div class="backimg"></div>
+    <div class="container">
+      <div class="card">
+        <!-- <i id="rotate" ><img src="/img/refresh.png" alt=""></i> -->
 
-    <!-- Add Bootstrap CSS from CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="container">
-    <h2 class="mt-4">Login</h2>
+        <div class="front">
+          <h3 class="login">LOGIN</h3>
 
-    <form action="/login" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <!-- {{ form.hidden_tag() }} -->
-        <div class="mb-3">
-            <label for="username" class="form-label">Username:</label>
-            {{ form.email(class="form-control") }}
+          <form id="login" action="/login" method="post">
+            {{ login.csrf_token() }}
+ 
+             {{ login.email(placeholder="Email") }}
+           
+          {{ login.password(placeholder="Password") }}
+            <a href="/forgetpassword">Forget Password</a>
+               {{ login.submit(class="button") }}
+         
+          </form>
+          <input type="button" class="tosignup" value="Create Account" />
         </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password:</label>
-            {{ form.password(class="form-control") }}
-        </div>
-        {{ form.submit(class="btn btn-primary") }}
-    </form>
 
-    <!-- Add Bootstrap JS and Popper.js from CDN (required for Bootstrap's JavaScript features) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        <div class="back">
+          <h3 class="login">SIGNUP</h3>
+          <form id="signup" action="/sign-up" method="post">
+             {{ form.csrf_token }}
+            
+            {{ form.fullname(placeholder="Name") }}
+
+            <!-- <input type="text" name="name" id="name" placeholder="Name" /> -->
+              {{ form.email(placeholder="Email",required=True) }}
+           <!--  <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="password"
+            /> -->
+           <!--  <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="password"
+            /> -->
+            {{ form.password( id="Password",placeholder="Password", required=True) }}
+            {{ form.confirm_password( id="ConfirmPassword",placeholder="Confirm password", required=True) }}
+            
+             {{ form.submit(class="button") }}
+          </form>
+          <input type="button" class="tologin" value="LOGIN" />
+        </div>
+      </div>
+    </div>
+    <script src="static/js/login.js"></script>
+  </body>
 </html>

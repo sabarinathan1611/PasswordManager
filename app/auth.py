@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db, mail
 from .models import User
 from .forms import LoginForm, SignUpForm
-from .functions import send_verification_email
+from .functions import send_verification_email,makedir
 from .config import Config 
 from flask_cors import cross_origin
 from .dataencryption import AESCipher 
@@ -19,12 +19,9 @@ aes_cipher = AESCipher()
 @auth.route('/login', methods=['GET', 'POST'])
 
 def login():
-    form = LoginForm()
-
-    
-        
- 
-    if form.validate_on_submit():
+    login = LoginForm() 
+    form = SignUpForm()
+    if login.validate_on_submit():
         email = form.email.data
         password = form.password.data   
         print("Email",email)
@@ -35,11 +32,9 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
             return redirect(url_for('view.home'))
-            
         else:
             flash("Login unsuccessful. Please check your email and password.")
-
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form,login=login)
 
 
 
@@ -47,12 +42,13 @@ def login():
 
 @auth.route('/sign-up', methods=['POST', 'GET'])
 def sign_up():
-    form = SignUpForm()
+    
 
-    if request.method == 'POST' and form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-        name = form.fullname.data
+    if request.method == 'POST' :
+        email = request.form.get('email')
+
+        password = request.form.get('password')
+        name = request.form.get('fullname')
         hashed_password = generate_password_hash(password)
 
         
@@ -66,7 +62,8 @@ def sign_up():
         else:
             if email == Config.AdminMail:
                 print("Admin Email:",Config.AdminMail)
-                user = User(email=encrypted_email, password=hashed_password, username=encrypted_name,is_verified=True,role='admin')
+                path=makedir()
+                user = User(email=encrypted_email,path=path, password=hashed_password, username=encrypted_name,is_verified=True,role='admin',limited_storage=1073741824)
                 db.session.add(user)
                 db.session.commit()
 
@@ -74,8 +71,10 @@ def sign_up():
                 flash('Admin Account created successfully', 'success')
                 return redirect(url_for('view.home'))
             else:
+                path=makedir()
+                print('Account created')
                 
-                user = User(email=encrypted_email, password=hashed_password, username=encrypted_name)
+                user = User(email=encrypted_email,path=path, password=hashed_password, username=encrypted_name)
                 db.session.add(user)
                 db.session.commit()
 
@@ -83,9 +82,10 @@ def sign_up():
                 send_verification_email(user)
 
                 flash('Account created successfully. Check your email for verification.', 'success')
-                return redirect(url_for('view.home'))
+    return redirect(url_for('view.home'))
 
-    return render_template('Signup.html', form=form)
+   
+
 @auth.route('/verify_email/<string:verification_token>')
 def verify_email(verification_token):
     user = User.query.filter_by(verification_token=verification_token).first()
@@ -109,4 +109,10 @@ def verify_email(verification_token):
 @login_required
 def logout():
     logout_user()
+    return redirect(url_for('auth.login'))
+
+@auth.route('/delete-account')
+def deleteaccount():
+    id=current_user.id
+    
     return redirect(url_for('auth.login'))

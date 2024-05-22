@@ -61,31 +61,15 @@ class File_Decryption(CryptoBase):
 
 
 
-        # Write decrypted data to output file
-        # with open(output_filename, 'wb') as file:
-        #     file.write(decrypted_data)
 
-# Example usage
-# encryption_instance = File_Encryption()
-# decryption_instance = File_Decryption()
+"""
+real    0m3.608s
+user    0m0.481s
+sys 0m2.433s
+For 43MB File Encryption Only
 
-# # Generate RSA key pair
-# key_pair = encryption_instance.generate_key_pair()
-# public_key = key_pair.publickey()
-# private_key = key_pair
-
-
-
-# # Save keys to files in DER format
-# encryption_instance.save_key_to_file(public_key, 'public_key.der')
-# encryption_instance.save_key_to_file(private_key, 'private_key.der')
-
-# # Load keys from files
-# public_key = encryption_instance.load_key_from_file('public_key.der')
-# private_key = encryption_instance.load_key_from_file('private_key.der')
-
-# # Encrypt a file
-# encryption_instance.encrypt_file('Test.png', 'encrypted_file.bin', public_key)
-
-# # Decrypt the file
-# decryption_instance.decrypt_file('encrypted_file.bin', 'decrypted_file.png', private_key)
+real    0m4.760s
+user    0m0.570s
+sys 0m1.538s
+For Both File_Encryption&File_Decryption
+"""

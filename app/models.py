@@ -22,16 +22,27 @@ class User(db.Model, UserMixin):
     files = db.relationship('File', backref='user', lazy=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     role =  db.Column(db.String(100),nullable=False,default='user')
+    path=db.Column(db.String(100), unique=True, nullable=False)
     is_verified = db.Column(db.Boolean, default=False)
     verification_token = db.Column(db.String(32), default=secrets.token_urlsafe)
+    used_storage=db.Column(db.Integer,default=0)
+    limited_storage=db.Column(db.Integer,nullable=False,default=209715200)
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(100), nullable=False)
-    filetype = db.Column(db.String(200), nullable=False)
     filepath = db.Column(db.String(200), nullable=False)
     private_key_path= db.Column(db.String(200), nullable=False)
     public_key_path= db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     mimetype=db.Column(db.String(200), nullable=False)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
+
+class DeleteAccount(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)  
+    email = db.Column(db.String(100),  nullable=False)
+    deleted=db.Column(db.Boolean, default=False)
+
+
+

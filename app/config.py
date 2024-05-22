@@ -9,6 +9,8 @@ class Config:
     DEBUG = False
     SESSION_COOKIE_HTTPOLY=True
     SESSION_COOKIE_SECURE = False
+    SCHEDULER_API_ENABLED = True
+    # SERVER_NAME='netbug.xyz:5000'
 
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465

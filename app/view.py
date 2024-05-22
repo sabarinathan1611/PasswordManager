@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify,abort
 from . import db
 from .models import User,Text,File
 from flask_login import login_required,current_user
@@ -14,6 +14,12 @@ from werkzeug.utils import secure_filename
 import threading
 import base64
 from .fileencryption import *
+from .Converter import Converter
+
+
+
+
+
 aes_cipher = AESCipher()
 
 view = Blueprint('view', __name__)
@@ -23,6 +29,11 @@ view = Blueprint('view', __name__)
 @login_required
 def home():
     fileform=FileForm()
+    user = User.query.get_or_404(current_user.id);
+    if user.used_storage == user.limited_storage:
+        flash("Your storage is full")
+
+        return redirect(url_for('view.profile'))
     form = PasswordForm()
     if current_user.is_verified != True:
         
@@ -41,13 +52,14 @@ def admin():
         system_info_printer = SystemInfoPrinter()
         storage_info= system_info_printer.print_storage_info()
         system_info =system_info_printer.print_system_info()
+        user = User.query.order_by(User.date)
 
     else: 
         flash("You Don't have a Access")
         return redirect(url_for('view.home'))
 
 
-    return render_template ('admin.html',storage_info=storage_info,system_info=system_info)
+    return render_template ('admin.html',storage_info=storage_info,system_info=system_info,user=user)
 
 @view.route('/password',methods=['POST'])
 @login_required
@@ -62,10 +74,10 @@ def store_pass():
         data={'url':url,'name':name,'username':username,'password':password,'keypath':keypath}
         print("DATA: ",type(data))
         string=dict_to_string(data)
-        public_key_path=keypath+generate_filename('der')
+        public_key_path=keypath+'public_key/'+current_user.path+generate_filename('der')
         print(public_key_path)
         encrypted_public=aes_cipher.encrypt_data(public_key_path)
-        private_key_path=keypath+generate_filename('der')
+        private_key_path=keypath+'private_key/'+current_user.path+generate_filename('der')
         print(private_key_path)
         encrypted_private=aes_cipher.encrypt_data(private_key_path)
 
@@ -79,7 +91,9 @@ def store_pass():
 @view.route('/showpass',methods=['POST','GET'])
 @login_required
 def showpass():
+    form=EditPasswordForm()
     if current_user.is_authenticated:
+
         passwords = Text.query.filter_by(user_id=current_user.id)
         data=[]
         for  password in passwords:
@@ -91,7 +105,7 @@ def showpass():
                 })
         print("DATA:",data,'\n')
         
-        return render_template('passwords.html', data=data)
+        return render_template('passwords.html', data=data,form=form)
     else:
         return redirect(url_for('view.home'))
 
@@ -120,23 +134,26 @@ def fileuplod():
         print("\n\n\n",output,'\n',type(output),'\n\n')
         encryption_instance.encrypt_file(filepath,output, public_key)
 
-        addnew=File(filename=aes_cipher.encrypt_data(filename),filetype=aes_cipher.encrypt_data(file.mimetype),filepath=aes_cipher.encrypt_data(output),private_key_path=aes_cipher.encrypt_data(private_key_path),public_key_path=aes_cipher.encrypt_data(public_key_path),user_id=current_user.id,mimetype=aes_cipher.encrypt_data(file.mimetype))
+        addnew=File(filename=aes_cipher.encrypt_data(filename),filepath=aes_cipher.encrypt_data(output),private_key_path=aes_cipher.encrypt_data(private_key_path),public_key_path=aes_cipher.encrypt_data(public_key_path),user_id=current_user.id,mimetype=aes_cipher.encrypt_data(file.mimetype))
         db.session.add(addnew)
         db.session.commit()
         thread = threading.Thread(target=os.remove, args=(filepath,))
         thread.start()
+        size=os.path.getsize(output)
+        print("SIZE:",size)
+        print("TYPE OF SIZE",type(size))
 
-    return filename
+    return redirect(url_for('view.decrypt_file'))
 
 
-@view.route('/decrypt')
+@view.route('/showfile')
 @login_required
 def decrypt_file():
 # Get all files associated with the current user
     user_files = current_user.files  # Assuming 'files' is the relationship between User and File models
 
     # Initialize a list to store image data
-    image_data_list = []
+    file_data_list = []
 
     # Decrypt and encode each file's data
     for file in user_files:
@@ -148,16 +165,48 @@ def decrypt_file():
         private_key = decryption_instance.load_key_from_file(private_key_path)
         decrypted_data = decryption_instance.decrypt_file(file_path, private_key)
 
-        # Base64 encode the decrypted image data
+        # Base64 encode the decrypted file data
         decrypted_data_base64 = base64.b64encode(decrypted_data).decode('utf-8')
 
         mimetype = aes_cipher.decrypt_data(file.mimetype)
 
-        # Append the image data to the list
-        image_data_list.append({
+        # Append the file data to the list
+        file_data_list.append({
             'decrypted_data_base64': decrypted_data_base64,
             'mimetype': mimetype
         })
 
-    # Pass the list of image data to the template
-    return render_template('decrypted_image.html', image_data_list=image_data_list)
+    # Pass the list of file data to the template
+    return render_template('decrypted_file.html', file_data_list=file_data_list)
+
+
+
+
+@view.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    convert=Converter()
+    user_id = current_user.id
+    user = User.query.get_or_404(user_id)
+    used = user.used_storage
+    print('used', used)
+    limit = user.limited_storage
+    print('limit', limit)
+    percentage=Converter.calculate_percentage(used,limit)
+    print("percentage",percentage)
+    details = {
+        'username': aes_cipher.decrypt_data(user.username),
+        'email': aes_cipher.decrypt_data(user.email),
+        'used_storage': convert.convert_to_GB(used),  
+        'limited_storage': convert.convert_to_GB(limit)  
+    }
+    return render_template('profile.html', details=details)
+    
+
+@view.route('/edit-password',methods=['POST','GET'])
+def edit_password():
+    if request.is_json:
+        data= request.get_json()
+        print("DATA",data)
+
+    return jsonify("non")

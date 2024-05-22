@@ -2,6 +2,8 @@
 {% block title %} Home {% endblock %}
 {% block content %} 
 <div class="container">
+    {{current_user.id}}
+    
   <h3>Password Form</h3>
   <form id="passwordForm" method="post" action="/password">
     {{ form.csrf_token }}

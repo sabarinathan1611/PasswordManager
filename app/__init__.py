@@ -8,10 +8,14 @@ import os
 from flask_cors import CORS
 from logging.handlers import RotatingFileHandler
 from sqlalchemy import event
+from flask_apscheduler import APScheduler
+# from flask_migrate import Migrate
 import logging
 
 db = SQLAlchemy()
+
 mail = Mail()
+scheduler=APScheduler()
 csrf = CSRFProtect()
 DB_NAME = "database.db"
 
@@ -29,13 +33,17 @@ def create_app(mode='default'):
 
     # Initialize database
     db.init_app(app)
+    # migrate = Migrate(app, db)  
 
     # Initialize CSRF protection
     csrf.init_app(app)
     cors = CORS(app, resources={r"/*": {"origins": "0.0.0.0", "supports_credentials": True}})
+  
 
     # Initialize Flask-Mail
     mail.init_app(app)
+    scheduler.init_app(app)
+    scheduler.start()
 
     # Register blueprints
     from .auth import auth

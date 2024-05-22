@@ -1,0 +1,183 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #16161d;
+  /* background: linear-gradient(90deg, #04b471, #16161d, #044c22, #16161d,#299b74,#16161d,#297149);
+  background-size: 1800% 1800%;
+  -webkit-animation: Aurora 180s ease infinite;
+  -moz-animation: Aurora 180s ease infinite;
+  animation: Aurora 180s ease infinite;
+animation-iteration-count: infinite; */
+  font-family: "Noto Sans", sans-serif;
+}
+
+
+/* @-webkit-keyframes Aurora {
+    0%{background-position:18% 0%}
+    50%{background-position:83% 100%}
+    100%{background-position:18% 0%}
+}
+@-moz-keyframes Aurora {
+    0%{background-position:18% 0%}
+    50%{background-position:83% 100%}
+    100%{background-position:18% 0%}
+}
+@keyframes Aurora { 
+    0%{background-position:18% 0%}
+    50%{background-position:83% 100%}
+    100%{background-position:18% 0%}
+} */
+
+
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+section {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 20px;
+  margin: 20px;
+/* z-index: -99; */
+  position: relative;
+  top: 40px;
+}
+.container h3 {
+  color: #f0f0f0;
+}
+.Password form {
+  color: #f0f0f0;
+  width: 400px;
+  height: 500px;
+  background: #ddd2d203;
+  backdrop-filter: blur(50px);
+  border: 2px solid #f0f0f078;
+  border-radius: 25px;
+  box-shadow: -1px -1px 9px 3px #9ba59a40;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 29px;
+  justify-content: center;
+  align-items: center;
+}
+.file form {
+  color: #f0f0f0;
+  width: 400px;
+  height: 500px;
+  background: #ddd2d203;
+  backdrop-filter: blur(50px);
+  border: 2px solid #f0f0f078;
+  border-radius: 25px;
+  box-shadow: -1px -1px 9px 3px #9ba59a40;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 29px;
+  justify-content: center;
+  align-items: center;
+}
+
+.Password form input {
+  width: 200px;
+  padding: 0px;
+  margin: 0px;
+  border: none;
+  border-bottom: 2px solid green;
+  background: transparent;
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  color: #fff;
+
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+button {
+  background-color: #c2fbd7;
+  border-radius: 100px;
+  box-shadow: rgba(44, 187, 99, 0.2) 0 -25px 18px -14px inset,
+    rgba(44, 187, 99, 0.15) 0 1px 2px, rgba(44, 187, 99, 0.15) 0 2px 4px,
+    rgba(44, 187, 99, 0.15) 0 4px 8px, rgba(44, 187, 99, 0.15) 0 8px 16px,
+    rgba(44, 187, 99, 0.15) 0 16px 32px;
+  color: green;
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular, -apple-system, system-ui, Roboto, sans-serif;
+  padding: 7px 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+button:hover {
+  box-shadow: rgba(44, 187, 99, 0.35) 0 -25px 18px -14px inset,
+    rgba(44, 187, 99, 0.25) 0 1px 2px, rgba(44, 187, 99, 0.25) 0 2px 4px,
+    rgba(44, 187, 99, 0.25) 0 4px 8px, rgba(44, 187, 99, 0.25) 0 8px 16px,
+    rgba(44, 187, 99, 0.25) 0 16px 32px;
+  transform: scale(1.05) rotate(-1deg);
+}
+#drop-area {
+  border: 2px dashed #ccc;
+  border-radius: 20px;
+  width: 300px;
+  z-index: 100;
+
+  height: 200px;
+  text-align: center;
+  margin: 50px auto;
+  position: relative; /* Added for positioning the icon */
+  cursor: pointer; /* Added to indicate clickable area */
+}
+#drop-area.highlight {
+  border-color: purple;
+}
+#fileInput {
+  display: none;
+}
+.fa-plus {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
+  color: #666;
+}
+
+@media (max-width: 870px) {
+
+  .container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+  }
+  .Password form,
+  .file form {
+    width: 298px;
+  }
+}
+@media only screen and (max-width: 799px) {
+  .Password form,
+  .file form,section {
+    z-index: -99;
+  }
+ 
+}
