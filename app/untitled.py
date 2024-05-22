@@ -3,7 +3,7 @@ from faker import Faker
 import random
 from datetime import datetime
 import secrets
-from dataencryption import AESCipher
+from .dataencryption import *
 aes_cipher = AESCipher()
 
 
@@ -50,7 +50,7 @@ def insert_random_data(num_records):
         # Generate data for User table
         username =  aes_cipher.encrypt_data(fake.user_name())
         email = aes_cipher.encrypt_data(fake.unique.email())
-        password = aes_cipher.encrypt_data(fake.password())
+        password = aes_cipher.encrypt_data('1234')
         date = fake.date_time_this_decade()
         path = aes_cipher.encrypt_data(fake.unique.file_path())
         is_verified = fake.boolean()
