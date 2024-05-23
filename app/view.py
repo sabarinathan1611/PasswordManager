@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify,abort
 from . import db
-from .models import User,Text,File
+from .models import User,Text,File,DeleteAccount
 from flask_login import login_required,current_user
 from .sysinfo import *
 from .functions import dict_to_string,string_to_dict,generate_filename
@@ -28,16 +28,18 @@ view = Blueprint('view', __name__)
 @view.route('/',methods=['POST','GET'])
 @login_required
 def home():
-    fileform=FileForm()
-    user = User.query.get_or_404(current_user.id);
-    if user.used_storage == user.limited_storage:
-        flash("Your storage is full")
 
-        return redirect(url_for('view.profile'))
-    form = PasswordForm()
     if current_user.is_verified != True:
         
         return redirect(url_for('auth.logout'))
+    else:
+            fileform=FileForm()
+            user = User.query.get_or_404(current_user.id);
+            if user.used_storage == user.limited_storage:
+                flash("Your storage is full")
+
+                return redirect(url_for('view.profile'))
+            form = PasswordForm()
 
     return render_template('index.html',form=form,fileform=fileform)
 
@@ -210,3 +212,30 @@ def edit_password():
         print("DATA",data)
 
     return jsonify("non")
+
+
+@view.route('/delete-me', methods=['POST', 'GET'])
+@login_required  # Ensure the user is logged in
+def deleteaccount():
+    try:
+        # Create a new entry in the DeleteAccount table with decrypted email
+        addnew = DeleteAccount(user_id=current_user.id, email=aes_cipher.decrypt_data(current_user.email))
+        db.session.add(addnew)
+
+        # Set the user's is_verified attribute to False
+        current_user.is_verified = False
+        print(current_user.is_verified)
+
+        # Commit the transaction to the database
+        db.session.commit()
+
+        # Flash a success message
+        flash('Your account deletion request has been submitted.', 'success')
+
+    except Exception as e:
+        # Rollback the session in case of an error
+        db.session.rollback()
+        flash(f'An error occurred: {str(e)}', 'danger')
+
+    # Redirect to the home page
+    return redirect(url_for('home'))

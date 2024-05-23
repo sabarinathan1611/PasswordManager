@@ -9,6 +9,8 @@ from flask_cors import CORS
 from logging.handlers import RotatingFileHandler
 from sqlalchemy import event
 from flask_apscheduler import APScheduler
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 # from flask_migrate import Migrate
 import logging
 
@@ -18,6 +20,9 @@ mail = Mail()
 scheduler=APScheduler()
 csrf = CSRFProtect()
 DB_NAME = "database.db"
+engine=None
+Session=None
+
 
 def create_app(mode='default'):
     app = Flask(__name__)
@@ -65,6 +70,8 @@ def create_app(mode='default'):
     def load_user(id):
         return User.query.get(int(id))
     create_database(app)
+    engine = create_engine(str(app.config['SQLALCHEMY_DATABASE_URI']))
+    Session = sessionmaker(bind=engine)
 
     return app
 
