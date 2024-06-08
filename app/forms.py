@@ -39,3 +39,21 @@ class EditPasswordForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()], default='')
     username = StringField('User Name', validators=[DataRequired()], default='')
     password = PasswordField('Password', validators=[DataRequired()], default='')
+
+class EmailForm(FlaskForm):
+        email = StringField('Email', validators=[DataRequired(), Email()])
+        def validate_email(form, field):
+            try:
+                v = validate_email(field.data)
+                field.data = v.email
+            except EmailNotValidError as e:
+                raise ValidationError(str(e))
+        submit = SubmitField('Submit')
+
+
+class ChangePassForm(FlaskForm):
+
+    password = PasswordField('Password1', validators=[DataRequired()])
+    confirm_password = PasswordField('Password2', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+

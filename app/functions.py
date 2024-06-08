@@ -18,17 +18,27 @@ import logging
 from logging.handlers import RotatingFileHandler
 from .DeleteTask import delete_user_files_and_data
 
-#scheduler.add_job(id='minute_task', func=delete_user_files_and_data, trigger='interval', minutes=1)
-scheduler.add_job(id='daily_task', func=delete_user_files_and_data, trigger='cron', hour=0, minute=0)
+#scheduler.add_job(id='minute_task', func=delete_user_files_and_data, trigger='interval', minutes=2)
+#scheduler.add_job(id='daily_task', func=delete_user_files_and_data, trigger='cron', hour=0, minute=0)
 
 aes_cipher = AESCipher()
-def send_verification_email(user):
-    verification_link = url_for('auth.verify_email', verification_token=user.verification_token, _external=True)
-    subject = 'Verify Your Email for Web App'
-    body = f'Click the following link to verify your email: {verification_link}'
-    email=aes_cipher.decrypt_data(user.email)
-    print("Email")
-    send_email(email, subject, body)
+def send_verification_email(user,passChange=False):
+    if  passChange:
+        print('Enter into Change password ')
+        verification_link = url_for('auth.changepass', verification_token=user.verification_token, _external=True)
+        subject = 'Verify Your Email for Web App'
+        body = f'Click the following link to verify your email: {verification_link}'
+        email=aes_cipher.decrypt_data(user.email) 
+        print("Email passChange")
+        send_email(email, subject, body)
+    else:
+        verification_link = url_for('auth.verify_email', verification_token=user.verification_token, _external=True)
+        subject = 'Verify Your Email for Web App'
+        body = f'Click the following link to verify your email: {verification_link}'
+        email=aes_cipher.decrypt_data(user.email) 
+        print("Email")
+        send_email(email, subject, body)
+
 
 def send_email(to, subject, body):
     sender=os.environ.get('GMAIL_USERNAME')
@@ -88,7 +98,7 @@ def makedir():
             print("Folder Already Exists")
     except OSError as e:
         print(e)
-    return uuid_str+'/'
+    return uuid_str
 
 
 

@@ -30,12 +30,12 @@ view = Blueprint('view', __name__)
 def home():
 
     if current_user.is_verified != True:
-        
+        flash("Verify Your Email")
         return redirect(url_for('auth.logout'))
     else:
             fileform=FileForm()
             user = User.query.get_or_404(current_user.id);
-            if user.used_storage == user.limited_storage:
+            if user.used_storage == user.limited_storage :
                 flash("Your storage is full")
 
                 return redirect(url_for('view.profile'))
@@ -76,11 +76,11 @@ def store_pass():
         data={'url':url,'name':name,'username':username,'password':password,'keypath':keypath}
         print("DATA: ",type(data))
         string=dict_to_string(data)
-        public_key_path=keypath+'public_key/'+current_user.path+generate_filename('der')
-        print(public_key_path)
+        public_key_path=os.path.join(keypath,'public_key',current_user.path,generate_filename('der'))
+        print('public_key_path',public_key_path)
         encrypted_public=aes_cipher.encrypt_data(public_key_path)
-        private_key_path=keypath+'private_key/'+current_user.path+generate_filename('der')
-        print(private_key_path)
+        private_key_path=os.path.join(keypath,'private_key',current_user.path,generate_filename('der'))
+        print('private_key_path',private_key_path)
         encrypted_private=aes_cipher.encrypt_data(private_key_path)
 
         encrypted_session_key, iv, ciphertext = text_encryption(public_key_path, private_key_path, string)
@@ -121,10 +121,10 @@ def fileuplod():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], generate_filename('file')+filename)
         filemimetype=file.mimetype
         file.save(filepath)
-        #print("File:", filepath)
+        print("File:", filename)
         keypath=app.config['KEY_FOLDER']
-        public_key_path=keypath+generate_filename('der')
-        private_key_path=keypath+generate_filename('der')
+        public_key_path=os.path.join(keypath,'public_key',current_user.path,generate_filename('der'))
+        private_key_path=os.path.join(keypath,'private_key',current_user.path,generate_filename('der'))
         encryption_instance = File_Encryption()
         key_pair = encryption_instance.generate_key_pair()
         public_key = key_pair.publickey()
@@ -132,7 +132,7 @@ def fileuplod():
         encryption_instance.save_key_to_file(public_key, public_key_path)
         encryption_instance.save_key_to_file(private_key, private_key_path)
         public_key = encryption_instance.load_key_from_file(public_key_path)
-        output=os.path.join(app.config['UPLOAD_FOLDER'], generate_filename('file')+'.bin')
+        output=os.path.join(app.config['UPLOAD_FOLDER'], current_user.path,generate_filename('file')+'.bin')
         print("\n\n\n",output,'\n',type(output),'\n\n')
         encryption_instance.encrypt_file(filepath,output, public_key)
 
@@ -206,6 +206,7 @@ def profile():
     
 
 @view.route('/edit-password',methods=['POST','GET'])
+@login_required
 def edit_password():
     if request.is_json:
         data= request.get_json()
@@ -238,4 +239,4 @@ def deleteaccount():
         flash(f'An error occurred: {str(e)}', 'danger')
 
     # Redirect to the home page
-    return redirect(url_for('home'))
+    return redirect(url_for('view.home'))

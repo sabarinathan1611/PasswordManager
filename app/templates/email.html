@@ -1,0 +1,17 @@
+  {% extends "base.html" %}
+{% block title %} Home {% endblock %}
+{% block content %} 
+<div class="container">
+    {{current_user.id}}
+    
+
+  <form id="Emailform" method="post" action="/forget-password">
+    {{ form.csrf_token }}
+    <div class="mb-3">
+        <label for="url" class="form-label">Email</label>
+        {{ form.email(class="form-control", id="url") }}
+    </div>
+    {{ form.submit(class="button") }}
+</form>
+
+{% endblock %}

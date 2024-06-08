@@ -57,6 +57,10 @@ class File_Decryption(CryptoBase):
         # Decrypt the data using AES
         aes_cipher = AES.new(aes_key, AES.MODE_EAX, nonce=nonce)
         decrypted_data = aes_cipher.decrypt_and_verify(encrypted_data, tag)
+        # with open(input_filename, 'wb') as file:
+        #     file.write(decrypted_data)
+
+
         return decrypted_data
 
 

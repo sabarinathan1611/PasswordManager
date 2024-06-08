@@ -9,6 +9,19 @@
   <body>
     <div class="backimg"></div>
     <div class="container">
+      <div class="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">
+                        <span>{{ message }}</span>
+                        <button class="close-btn">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
       <div class="card">
         <!-- <i id="rotate" ><img src="/img/refresh.png" alt=""></i> -->
 
@@ -21,7 +34,7 @@
              {{ login.email(placeholder="Email") }}
            
           {{ login.password(placeholder="Password") }}
-            <a href="/forgetpassword">Forget Password</a>
+            <a href="/forget-password">Forget Password</a>
                {{ login.submit(class="button") }}
          
           </form>
@@ -58,6 +71,23 @@
         </div>
       </div>
     </div>
+    <script type="text/javascript">
+     
+document.addEventListener('DOMContentLoaded', () => {
+    const closeButtons = document.querySelectorAll('.close-btn');
+    
+    closeButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const flashMessage = e.target.parentElement;
+            flashMessage.style.opacity = '0';
+            setTimeout(() => {
+                flashMessage.remove();
+            }, 300); // 300ms for fade out animation
+        });
+    });
+});
+
+    </script>
     <script src="static/js/login.js"></script>
   </body>
 </html>

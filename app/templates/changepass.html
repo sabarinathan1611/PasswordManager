@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %} Admin {% endblock %}
+{% block content %}
+  <script></script>
+      <form id="signup" action="{{request.path}}" method="post">
+        {{request.path}}
+             {{ form.csrf_token }}
+            
+      
+            {{ form.password( id="Password",placeholder="Password", required=True) }}
+            {{ form.confirm_password( id="ConfirmPassword",placeholder="Confirm password", required=True) }}
+            
+             {{ form.submit(class="button") }}
+          </form>
+    
+
+{% endblock %}
