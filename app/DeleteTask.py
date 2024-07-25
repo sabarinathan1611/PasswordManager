@@ -1,19 +1,12 @@
 import sqlite3
 import os
 import shutil
-
-# Placeholder for AES cipher object; define this according to your encryption library.
-class AESCipher:
-    def decrypt_data(self, encrypted_data):
-        # Implement your decryption logic here
-        return encrypted_data  # This should return the decrypted data
-
-aes_cipher = AESCipher()  # Initialize your AES cipher
+from .dataencryption import AESCipher as aes_cipher
 
 def delete_user_files_and_data():
     # Absolute path to the SQLite database file
     db_path = os.path.abspath('./instance/database.db')
-    
+
     # Check if the database file exists
     if not os.path.exists(db_path):
         print(f"Database file not found at {db_path}")
@@ -32,7 +25,6 @@ def delete_user_files_and_data():
             
             # Extract user IDs from the query result
             user_ids = [user[0] for user in users_to_delete]
-            print("WORK")
             
             for user_id in user_ids:
                 # Load user data from User table
@@ -42,7 +34,7 @@ def delete_user_files_and_data():
                 if user:
                     username, email, user_folder_path = user
                     # Print user details
-                    print(f"User: {username}, Email: {email}, Folder: {user_folder_path}")
+                    print(f"User: {aes_cipher.decrypt_data(username)}, Email: {aes_cipher.decrypt_data(email)}, Folder: {aes_cipher.decrypt_data(user_folder_path)}")
 
                     # Load and delete related files
                     cursor.execute("SELECT id, filepath, private_key_path, public_key_path FROM File WHERE user_id = ?", (user_id,))
@@ -72,7 +64,7 @@ def delete_user_files_and_data():
                             else:
                                 print(f"File not found: {decrypted_filepath}")
                         except Exception as e:
-                            print(f"Error deleting file {decrypted_filepath}: {e}")
+                            print(f"Error deleting file {file_id}: {e}")
 
                     # Load and delete related texts
                     cursor.execute("SELECT id, private_key_path, public_key_path FROM Text WHERE user_id = ?", (user_id,))
@@ -104,7 +96,6 @@ def delete_user_files_and_data():
 
                     # Delete the user folder
                     try:
-                    
                         if os.path.exists(user_folder_path):
                             shutil.rmtree(user_folder_path)
                             print(f"Deleted folder: {user_folder_path}")

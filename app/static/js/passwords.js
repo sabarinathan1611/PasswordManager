@@ -1,34 +1,32 @@
 const btn = document.querySelectorAll("button");
 
-// Attach a click event listener to each form
 btn.forEach((button) => {
   button.addEventListener("click", function (event) {
-    // Prevent the default button submission behavior
-    // event.preventDefault();
-    button.style.display = "none";
+    // Prevent the default button behavior (optional)
+    event.preventDefault();
 
     // Get the ID of the button that was clicked
     const clickedbuttonId = button.id;
-    editBtn = "edit_btn";
 
-    if (clickedbuttonId.includes(editBtn)) {
-      formid = `form-${clickedbuttonId.slice(9)}`;
-      form = document.getElementById(formid);
-      save = document.getElementById(`save_btn-${clickedbuttonId.slice(9)}`);
-      save.style.display = "block";
+    if (clickedbuttonId.startsWith("edit_btn")) {
+      // Extract the numeric part from the ID
+      const btnIndex = clickedbuttonId.split("-")[1];
+      
+      // Find corresponding save button and form
+      const saveBtn = document.getElementById(`save_btn-${btnIndex}`);
+      const form = document.getElementById(`form-${btnIndex}`);
 
-      console.dir(form);
+      // Toggle display of buttons
+      button.style.display = "none";
+      saveBtn.style.display = "block";
 
-      // Get all input elements in the form
+      // Enable inputs within the form
       const inputs = form.getElementsByTagName("input");
-
-      // Iterate over each input element and remove the 'disabled' attribute
       for (let i = 0; i < inputs.length; i++) {
         inputs[i].removeAttribute("disabled");
       }
     }
 
-    // Log the ID of the clicked form
-    console.log("Clicked form ID:", clickedbuttonId);
+    console.log("Clicked button ID:", clickedbuttonId);
   });
 });

@@ -20,13 +20,13 @@ class CryptoBase:
         return get_random_bytes(16)  # 128-bit AES key
 
 class File_Encryption(CryptoBase):
-    def encrypt_file(self, input_filename, output_filename, public_key):
+    def encrypt_file(self, filename, public_key):
         # Generate a random AES key
         aes_key = self.generate_aes_key()
 
         # Encrypt the file using AES
         aes_cipher = AES.new(aes_key, AES.MODE_EAX)
-        with open(input_filename, 'rb') as file:
+        with open(filename, 'rb') as file:
             data = file.read()
         encrypted_data, tag = aes_cipher.encrypt_and_digest(data)
 
@@ -35,7 +35,7 @@ class File_Encryption(CryptoBase):
         encrypted_aes_key = rsa_cipher.encrypt(aes_key)
 
         # Write encrypted AES key and data to output file
-        with open(output_filename, 'wb') as file:
+        with open(filename, 'wb') as file:
             file.write(encrypted_aes_key)
             file.write(aes_cipher.nonce)
             file.write(tag)
@@ -55,8 +55,8 @@ class File_Decryption(CryptoBase):
         aes_key = rsa_cipher.decrypt(encrypted_aes_key)
 
         # Decrypt the data using AES
-        aes_cipher = AES.new(aes_key, AES.MODE_EAX, nonce=nonce)
-        decrypted_data = aes_cipher.decrypt_and_verify(encrypted_data, tag)
+        # aes_cipher = AES.new(aes_key, AES.MODE_EAX, nonce=nonce)
+        # decrypted_data = aes_cipher.decrypt_and_verify(encrypted_data, tag)
         # with open(input_filename, 'wb') as file:
         #     file.write(decrypted_data)
 

@@ -3,6 +3,12 @@ from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from email_validator import validate_email, EmailNotValidError
+def validate_email(form, field):
+        try:
+            v = validate_email(field.data)
+            field.data = v.email
+        except EmailNotValidError as e:
+            raise ValidationError(str(e))
 
 class SignUpForm(FlaskForm):
     fullname = StringField('User Name', validators=[DataRequired()])
@@ -11,12 +17,7 @@ class SignUpForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Create Account')
 
-    def validate_email(form, field):
-        try:
-            v = validate_email(field.data)
-            field.data = v.email
-        except EmailNotValidError as e:
-            raise ValidationError(str(e))
+
             
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -35,19 +36,14 @@ class FileForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class EditPasswordForm(FlaskForm):
-    url = StringField('URL', validators=[DataRequired()], default='')
+    url = StringField('URL', validators=[DataRequired()] ,default='')
     name = StringField('Name', validators=[DataRequired()], default='')
     username = StringField('User Name', validators=[DataRequired()], default='')
     password = PasswordField('Password', validators=[DataRequired()], default='')
 
 class EmailForm(FlaskForm):
         email = StringField('Email', validators=[DataRequired(), Email()])
-        def validate_email(form, field):
-            try:
-                v = validate_email(field.data)
-                field.data = v.email
-            except EmailNotValidError as e:
-                raise ValidationError(str(e))
+        
         submit = SubmitField('Submit')
 
 
@@ -57,3 +53,10 @@ class ChangePassForm(FlaskForm):
     confirm_password = PasswordField('Password2', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+class ProfileForm(FlaskForm):
+
+    name = StringField('Name', validators=[DataRequired()], default='')
+    username = StringField('User Name', validators=[DataRequired()], default='')
+    email=StringField('Email',validators=[DataRequired()],default='')
+    submit = SubmitField('Save')
+    

@@ -41,7 +41,7 @@ def home():
                 return redirect(url_for('view.profile'))
             form = PasswordForm()
 
-    return render_template('index.html',form=form,fileform=fileform)
+    return render_template('home.html',form=form,fileform=fileform)
 
 
 
@@ -55,6 +55,7 @@ def admin():
         storage_info= system_info_printer.print_storage_info()
         system_info =system_info_printer.print_system_info()
         user = User.query.order_by(User.date)
+        
 
     else: 
         flash("You Don't have a Access")
@@ -122,6 +123,7 @@ def fileuplod():
         filemimetype=file.mimetype
         file.save(filepath)
         print("File:", filename)
+        _, extension = os.path.splitext(filename)
         keypath=app.config['KEY_FOLDER']
         public_key_path=os.path.join(keypath,'public_key',current_user.path,generate_filename('der'))
         private_key_path=os.path.join(keypath,'private_key',current_user.path,generate_filename('der'))
@@ -132,9 +134,9 @@ def fileuplod():
         encryption_instance.save_key_to_file(public_key, public_key_path)
         encryption_instance.save_key_to_file(private_key, private_key_path)
         public_key = encryption_instance.load_key_from_file(public_key_path)
-        output=os.path.join(app.config['UPLOAD_FOLDER'], current_user.path,generate_filename('file')+'.bin')
+        output=os.path.join(app.config['UPLOAD_FOLDER'], current_user.path,generate_filename('file')+extension)
         print("\n\n\n",output,'\n',type(output),'\n\n')
-        encryption_instance.encrypt_file(filepath,output, public_key)
+        encryption_instance.encrypt_file(filepath, public_key)
 
         addnew=File(filename=aes_cipher.encrypt_data(filename),filepath=aes_cipher.encrypt_data(output),private_key_path=aes_cipher.encrypt_data(private_key_path),public_key_path=aes_cipher.encrypt_data(public_key_path),user_id=current_user.id,mimetype=aes_cipher.encrypt_data(file.mimetype))
         db.session.add(addnew)
@@ -160,6 +162,8 @@ def decrypt_file():
     # Decrypt and encode each file's data
     for file in user_files:
         file_path = aes_cipher.decrypt_data(file.filepath)
+
+
         private_key_path = aes_cipher.decrypt_data(file.private_key_path)
 
         # Decrypt the file
@@ -178,8 +182,36 @@ def decrypt_file():
             'mimetype': mimetype
         })
 
+
     # Pass the list of file data to the template
     return render_template('decrypted_file.html', file_data_list=file_data_list)
+
+
+
+
+@view.route('/profile', methods=['POST'])
+@login_required
+def save_profile():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        print('username:', username)
+        print('Email: ', email)
+
+        user_id = current_user.id
+        user = User.query.get_or_404(user_id)
+        
+        # Encrypt data, encoding to bytes if necessary
+        user.username = aes_cipher.encrypt_data(username)
+        user.email = aes_cipher.encrypt_data(email)
+        user.is_verified=False
+        send_verification_email(user)
+        flash('Verify Your Email')
+
+        
+        db.session.commit()
+
+    return redirect(url_for('view.profile'))
 
 
 
@@ -187,6 +219,7 @@ def decrypt_file():
 @view.route('/profile', methods=['GET'])
 @login_required
 def profile():
+    form=ProfileForm()
     convert=Converter()
     user_id = current_user.id
     user = User.query.get_or_404(user_id)
@@ -196,23 +229,61 @@ def profile():
     print('limit', limit)
     percentage=Converter.calculate_percentage(used,limit)
     print("percentage",percentage)
-    details = {
+    users = {
         'username': aes_cipher.decrypt_data(user.username),
         'email': aes_cipher.decrypt_data(user.email),
         'used_storage': convert.convert_to_GB(used),  
         'limited_storage': convert.convert_to_GB(limit)  
     }
-    return render_template('profile.html', details=details)
+
+    return render_template('profile.html', users=users,form=form)
     
 
-@view.route('/edit-password',methods=['POST','GET'])
+@view.route('/edit-password', methods=['POST'])
 @login_required
 def edit_password():
-    if request.is_json:
-        data= request.get_json()
-        print("DATA",data)
+    print("Method :",request.method)
+    if request.method == 'POST':
+        id= request.form.get('id')
+        url=request.form.get('url')
+        username = request.form.get('username')
+        password=request.form.get('password')
+        name=request.form.get('name')
+        print("ID :",id,"\n url :",url,"\n username :",username," \n password:",password)
+        text = Text.query.get_or_404(id)
+        # print("\n\n\n\n\t",text.user_id,"\n\n\n\n\t")
+        if text and text.user_id == current_user.id:
+            # print("\n\n \t",True ,"\n \n\t")
+            keypath=app.config['KEY_FOLDER']
+            data={'url':url,'name':name,'username':username,'password':password,'keypath':keypath}
+            string=dict_to_string(data)
+            public_key_path=os.path.join(keypath,'public_key',current_user.path,generate_filename('der'))
+            print('public_key_path',public_key_path)
+            encrypted_public=aes_cipher.encrypt_data(public_key_path)
+            private_key_path=os.path.join(keypath,'private_key',current_user.path,generate_filename('der'))
+            print('private_key_path',private_key_path)
+            encrypted_private=aes_cipher.encrypt_data(private_key_path)
+            encrypted_session_key, iv, ciphertext = text_encryption(public_key_path, private_key_path, string)
+            stype=aes_cipher.encrypt_data("password")
 
-    return jsonify("non")
+            path=aes_cipher.decrypt_data(text.private_key_path)
+            if os.path.exists(path):
+                os.remove(path)
+            else:
+                print(f"File not found: {path}")
+            path=aes_cipher.decrypt_data(text.public_key_path)
+            if os.path.exists(path):
+                os.remove(path)
+
+            text.user_id=current_user.id 
+            text.encrypted_Key=encrypted_session_key
+            text.nonce=iv
+            text.ciphertext=ciphertext
+            text.private_key_path=encrypted_private
+            text.public_key_path=encrypted_public
+            text.store_type=stype
+            db.session.commit()      
+    return redirect(url_for('view.showpass'))
 
 
 @view.route('/delete-me', methods=['POST', 'GET'])

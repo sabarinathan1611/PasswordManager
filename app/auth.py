@@ -170,9 +170,9 @@ def changepass(verification_token):
             print('Password Changed')
             user.verification_token = None
             db.session.commit()
-            login_user(user)
+            #login_user(user)
             flash('Email verification successful! You can now access your account.')
-            return redirect(url_for('view.home'))
+            return redirect(url_for('auth.login'))
         else:
             flash('Passwords do not match. Please try again.')
     return render_template('changepass.html', form=changepass_form)

@@ -98,10 +98,10 @@ i {
 }
 
 .front {
-  display: none;
+  display: flex;
 }
 .back {
-  display: flex;
+  display: none;
 }
 .tologin,.tosignup{
 width: auto;

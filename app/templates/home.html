@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/css/home.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="static/css/nav.css">
+
+    <title>Home</title>
+  </head>
+  <body>
+    <nav>
+      <ul class="sidebar">
+        <li onclick="hideSidebar()" ><a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></a></li>
+        <li><a href="{{url_for('view.showpass')}}">Password</a></li>
+        <li><a href="{{url_for('view.decrypt_file')}}">File</a></li>
+        <li><a href="{{url_for('view.profile')}}">Profile</a></li>
+        <li><a href="#">About</a></li>
+        {%if current_user.admin == True%}
+        <li><a href="{{'view.admin'}}">Admin</a></li>
+        {%endif%}
+        <li><a href="{{url_for('auth.logout')}}">Logout</a></li>
+      </ul>
+      <ul>
+        <li><a href="#">Net Turst</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.showpass')}}">Password</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.decrypt_file')}}">File</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.profile')}}">Profile</a></li>
+        <li class="hideOnMobile"><a href="#">About</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.admin')}}">Admin</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('auth.logout')}}">Logout</a></li>
+        <li class="menu-button" onclick="showSidebar()" ><a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg></a></li>
+
+      </ul>
+    </nav>
+    <div class="container">
+      <section class="Password">
+        
+        <form action="{{url_for('view.store_pass')}}" method="post">
+          {{ form.csrf_token }}
+          <h3>Password</h3>
+        <label for="url">URL</label>
+          <!-- <input type="text" name="url" id="url" placeholder="Enter URL"> -->
+           {{ form.url(placeholder="Enter URL", id="url") }}
+          <label for="username">Name</label>
+            {{ form.name( id="name") }}
+          <label for="username">Username</label>
+        {{ form.username(id="username") }}
+
+          <label for="Password">Password</label>
+         {{ form.password( id="password") }}
+          
+          <button type="submit">save</button>
+          
+        </form>
+      </section>
+      <section class="file">
+<form id="fileform" action="{{ url_for('view.fileuplod') }}" enctype="multipart/form-data" method="post">
+  <h3>File</h3>
+  {{ fileform.csrf_token }}
+  <div id="drop-area" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+    <label for="fileInput">Drag and drop files here</label>
+    <i class="fas fa-plus"></i> <!-- Plus icon -->
+    {{ fileform.file(id="fileInput", onchange="handleFiles(this.files)") }}
+  </div>
+  {{ fileform.submit(id='btn-file') }}
+</form>
+</section>
+<script>
+  document.addEventListener('click', function(event) {
+      var clickedElement = event.target;
+      console.log('Clicked Element:', clickedElement);
+  });
+</script>
+<script src="static/js/home.js"></script>
+<script src="static/js/getform.js"></script>
+
+  </body>
+</html>

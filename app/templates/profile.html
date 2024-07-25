@@ -2,15 +2,18 @@
 {% block title %} Admin {% endblock %}
 {% block content %}
    <div class="container mt-5">
-{{
-    details.used_storage
-    
-}}
-{{
-    details.limited_storage
-    
-}}
-        </div>
-    
 
+   <form method="POST">
+       {{ form.hidden_tag() }}
+       {{ form.username(value=users.username) }}
+       {{ form.email(value=users.email)  }}
+        {{users.used_storage}}
+        <br>
+        {{users.limited_storage}}
+
+       {{ form.submit() }} 
+
+   </form>
+
+   </div>
 {% endblock %}
