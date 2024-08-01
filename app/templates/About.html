@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/css/home.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link rel="stylesheet" href="static/css/nav.css" />
+    <link rel="stylesheet" href="static/css/about.css" />
+    
+
+    <title>About</title>
+  </head>
+  <body>
+   <nav>
+      <ul class="sidebar">
+        <li onclick="hideSidebar()" ><a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></a></li>
+        <li><a href="{{url_for('view.showpass')}}">Password</a></li>
+        <li><a href="{{url_for('view.decrypt_file')}}">File</a></li>
+        <li><a href="{{url_for('view.profile')}}">Profile</a></li>
+        <li><a href="{{url_for('view.about')}}">About</a></li>
+        {%if current_user.admin == True%}
+        <li><a href="{{'view.admin'}}">Admin</a></li>
+        {%endif%}
+        <li><a href="{{url_for('auth.logout')}}">Logout</a></li>
+      </ul>
+      <ul>
+        <li><a href="#">Net Turst</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.showpass')}}">Password</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.decrypt_file')}}">File</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.profile')}}">Profile</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.about')}}">About</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('view.admin')}}">Admin</a></li>
+        <li class="hideOnMobile"><a href="{{url_for('auth.logout')}}">Logout</a></li>
+        <li class="menu-button" onclick="showSidebar()" ><a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg></a></li>
+
+      </ul>
+    </nav>
+
+    <div class="container">
+      <span>About</span>
+      <section>
+        <img class="avatar" src="static/images/avatar.jfif" alt="img" srcset="" />
+      </section>
+      <div class="content">
+        <section class="about-me">
+          <h2>About Me</h2>
+          Hi there! I'm Sabarinathan, a backend developer. I focus on security
+          and reliability in my projects. I created a secure local cloud storage
+          system with password management, using advanced encryption to protect
+          user data. I have built many projects with Python and Flask, which you
+          can find on my GitHub
+        </section>
+        <section class="about-project">
+          <h2>About Project</h2>
+          Our Application uses a robust hybrid RSA-AES encryption system to
+          ensure the utmost security of your stored passwords. RSA encryption is
+          employed to securely encrypt an AES session key, which in turn
+          encrypts the actual data. This dual-layer encryption approach
+          guarantees both high security and efficiency, safeguarding your
+          sensitive information against potential breaches. Additionally, each
+          encryption process includes a unique salt to enhance security further.
+          In the future, we plan to expand our encryption capabilities to
+          include file storage, ensuring comprehensive protection for all your
+          data needs.
+          <!-- <div class="tec">
+            <ul>
+              <li>TECH 1</li>
+              <li>TECH 2</li>
+              <li>TECH 3</li>
+            </ul>
+          </div> -->
+        </section>
+      </div>
+      <footer>
+        <span>Contact</span>
+        <div class="box">
+          <form action="/about" method="post">
+            {{form.csrf_token()}}
+            <div class="form__group field">
+              <input type="input" class="form__field" placeholder="Name" name="name" id='name' required />
+              <label for="name" class="form__label">Name</label>
+            </div>
+            <div class="form__group field">
+              <input type="input" class="form__field" placeholder="Email" name="email" id='name' required />
+              <label for="name" class="form__label">Email</label>
+            </div>
+             <div class="form__group field">
+              <!-- <input type="input" class="" placeholder="Name" name="name" id='name' required /> -->
+              <textarea name="text" class="form__field" id="" cols="10" rows="10"></textarea>
+              <label for="name" class="form__label">Feedback</label>
+             {{ form.submit(class="button") }}
+              
+            </div>
+
+          </form>
+        </div>
+        <ul>
+          <li>
+            <i class="fa-brands fa-github fa-1xl" style="color: #212020 ; font-size: 10px;"
+              ><a href="https://github.com/sabarinathan1611">GitHub</a></i
+            >
+          </li>
+          <li>
+            <i class="fa-solid fa-envelope fa-1xl" style="color: #db4545;font-size: 10px;"></i>
+              <a href="mailto:sabarinathan.project@gmail.com">
+              GMAIL
+              </a></i
+            >
+          </li>
+          <li><i class="fa-brands fa-linkedin fa-1xl" style="color: #107ffe;font-size: 10px;" ><a href="https://www.linkedin.com/in/sabarinathan-me">Linkedin</a></i></li>
+          
+        </ul>
+      </footer>
+    </div>
+<script src="static/js/home.js"></script>
+
+  </body>
+</html>

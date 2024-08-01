@@ -16,10 +16,6 @@ import base64
 from .fileencryption import *
 from .Converter import Converter
 
-
-
-
-
 aes_cipher = AESCipher()
 
 view = Blueprint('view', __name__)
@@ -311,3 +307,26 @@ def deleteaccount():
 
     # Redirect to the home page
     return redirect(url_for('view.home'))
+
+@view.route('/about',methods=['POST','GET'])
+def about():
+    form=FeedBack()
+    if form.validate_on_submit() and request.method == 'POST':
+        name = form.name.data
+        email = form.email.data
+        text=form.text.data
+        print("Name :"+name)
+        print("Email :"+ email)
+        print("Text :"+ text)
+
+
+    return render_template("About.html",form=form)
+
+
+
+
+
+
+
+
+

@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import *
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from email_validator import validate_email, EmailNotValidError
+from wtforms.widgets import TextArea
 def validate_email(form, field):
         try:
             v = validate_email(field.data)
@@ -59,4 +60,11 @@ class ProfileForm(FlaskForm):
     username = StringField('User Name', validators=[DataRequired()], default='')
     email=StringField('Email',validators=[DataRequired()],default='')
     submit = SubmitField('Save')
-    
+
+
+class FeedBack(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()], default='')
+    email=StringField('Email',validators=[DataRequired()],default='')
+    text = TextAreaField('Text', render_kw={"rows": 70, "cols": 11})
+    submit = SubmitField('Send')
+

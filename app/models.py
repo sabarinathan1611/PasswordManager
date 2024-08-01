@@ -44,5 +44,8 @@ class DeleteAccount(db.Model):
     email = db.Column(db.String(100),  nullable=False)
     deleted=db.Column(db.Boolean, default=False)
 
-
-
+class Feedback(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    name=db.Column(db.String,nullable=False)
+    email= db.Column(db.String,nullable=False)
+    text = db.Column(db.String,nullable=False)
