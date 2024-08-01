@@ -73,4 +73,31 @@
   {%endfor%}
 </table>
 
+<br>
+<table class="table table-dark table-striped" style="width: 500px;">
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Feedback</th>
+    <th>Fixed</th>
+   
+
+   
+  </tr>
+  {% for feedbacks in feedback %}
+
+  <tr>
+    <td>{{feedbacks.name}}</td>
+      <td>{{feedbacks.email}}</td>
+      <td>{{feedbacks.text}}</td>
+      <td>{{feedbacks.fixed}}</td>
+   
+
+  
+   
+  
+  </tr>
+
+  {%endfor%}
+</table>
 {% endblock %}

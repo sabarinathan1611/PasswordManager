@@ -49,3 +49,6 @@ class Feedback(db.Model):
     name=db.Column(db.String,nullable=False)
     email= db.Column(db.String,nullable=False)
     text = db.Column(db.String,nullable=False)
+    fixed=db.Column(db.Boolean, default=False)
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    

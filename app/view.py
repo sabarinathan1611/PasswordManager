@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify,abort
 from . import db
-from .models import User,Text,File,DeleteAccount
+from .models import User,Text,File,DeleteAccount,Feedback
 from flask_login import login_required,current_user
 from .sysinfo import *
 from .functions import dict_to_string,string_to_dict,generate_filename
@@ -51,6 +51,7 @@ def admin():
         storage_info= system_info_printer.print_storage_info()
         system_info =system_info_printer.print_system_info()
         user = User.query.order_by(User.date)
+        feedback = Feedback.query.order_by(Feedback.date)
         
 
     else: 
@@ -58,7 +59,7 @@ def admin():
         return redirect(url_for('view.home'))
 
 
-    return render_template ('admin.html',storage_info=storage_info,system_info=system_info,user=user)
+    return render_template ('admin.html',storage_info=storage_info,system_info=system_info,user=user,feedback=feedback)
 
 @view.route('/password',methods=['POST'])
 @login_required
@@ -315,9 +316,14 @@ def about():
         name = form.name.data
         email = form.email.data
         text=form.text.data
+
         print("Name :"+name)
         print("Email :"+ email)
         print("Text :"+ text)
+
+        feedback=Feedback(name=name,email=email,text=text)
+        db.session.add(feedback)
+        db.session.commit()
 
 
     return render_template("About.html",form=form)
