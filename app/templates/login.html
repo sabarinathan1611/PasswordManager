@@ -44,7 +44,7 @@
         <div class="back">
           <h3 class="login">SIGNUP</h3>
           <form id="signup" action="/sign-up" method="post">
-             {{ form.csrf_token }}
+             {{ form.csrf_token() }}
             
             {{ form.fullname(placeholder="Name") }}
 

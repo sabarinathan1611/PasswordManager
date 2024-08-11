@@ -1,42 +1,54 @@
 # auth.py
-from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify,session
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db, mail
 from .models import User
 from .forms import LoginForm, SignUpForm,EmailForm,ChangePassForm
-from .functions import send_verification_email,makedir
+from .functions import send_verification_email,makedir,string_to_hex
 from .config import Config 
 from flask_cors import cross_origin
 from .dataencryption import AESCipher 
 import secrets
 
-
+from datetime import timedelta,datetime
 
  
 auth = Blueprint('auth', __name__)
 aes_cipher = AESCipher()
 
 
-@auth.route('/login', methods=['GET', 'POST'])
 
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
-    login = LoginForm() 
+    loginform = LoginForm() 
     form = SignUpForm()
-    if login.validate_on_submit():
+    if loginform.validate_on_submit():
         email = form.email.data
         password = form.password.data   
-        print("Email",email)
+        # print("Email",email)
         encrypted_email = aes_cipher.encrypt_data(email)
-        print("encrypted_email:",encrypted_email)
+        # print("encrypted_email:",encrypted_email)
         user = User.query.filter_by(email=encrypted_email).first()
 
+        encrypted_password=aes_cipher.encrypt_data(password)
+        session['salt']=encrypted_password+string_to_hex(password)
+
+        print("\n ----------------------------\n")
+        print("Password :",encrypted_password)
+        # print("Type :",len (encrypted_password))
+        print("Salt: ",session.get('salt'))
+        print("Len of Salt: ",len(session.get('salt')))
+
+        print("\n ----------------------------\n")
+
         if user and check_password_hash(user.password, password):
+            session['last_active'] = datetime.now()
             login_user(user, remember=True)
             return redirect(url_for('view.home'))
         else:
             flash("Login unsuccessful. Please check your email and password.")
-    return render_template('login.html', form=form,login=login)
+    return render_template('login.html', form=form,login=loginform)
 
 
 
@@ -176,4 +188,3 @@ def changepass(verification_token):
         else:
             flash('Passwords do not match. Please try again.')
     return render_template('changepass.html', form=changepass_form)
-

@@ -11,13 +11,11 @@ class CryptoRSA:
         with open(private_key_path, 'rb') as f:
             self.private_key = RSA.import_key(f.read())
 
-    def encrypt_message(self, message, salt=None):
+    def encrypt_message(self, message, salt):
         session_key = get_random_bytes(16)
         
-        # Generate a random salt if not provided
-        if salt is None:
-            salt = get_random_bytes(16)
-        
+
+
         # Prepend the salt to the message
         message_with_salt = salt + message.encode()
 
@@ -32,7 +30,7 @@ class CryptoRSA:
         # Return the encrypted session key, iv, and ciphertext
         return base64.b64encode(encrypted_session_key), base64.b64encode(cipher_aes.iv), base64.b64encode(ciphertext)
 
-    def decrypt_message(self, encrypted_session_key_b64, iv_b64, ciphertext_b64):
+    def decrypt_message(self, encrypted_session_key_b64, iv_b64, ciphertext_b64,salt):
         encrypted_session_key = base64.b64decode(encrypted_session_key_b64)
         iv = base64.b64decode(iv_b64)
         ciphertext = base64.b64decode(ciphertext_b64)
@@ -46,7 +44,15 @@ class CryptoRSA:
         decrypted_message_with_salt = self.unpad_data(cipher_aes.decrypt(ciphertext))
 
         # Remove the salt from the decrypted message
-        decrypted_message = decrypted_message_with_salt[16:]
+        print("Salt : ",salt)
+        print("decrypted_message_with_salt :",decrypted_message_with_salt)
+        print("Type of decrypted_message_with_salt :",type(decrypted_message_with_salt))
+        print("Salt: ",decrypted_message_with_salt[ :len(salt)])
+
+
+        if salt == decrypted_message_with_salt[:len(salt)]:
+            decrypted_message = decrypted_message_with_salt[len(salt):]
+
 
         return decrypted_message.decode()
 
@@ -77,7 +83,7 @@ def generate_key_pair(public_key_path, private_key_path):
     else:
         print("Key pair files already exist.")
 
-def text_encryption(public_key_path, private_key_path, message):
+def text_encryption(public_key_path, private_key_path, message,salt):
     # Generate key pair
     generate_key_pair(public_key_path, private_key_path)
     print("Public and private key pair generated successfully.")
@@ -86,19 +92,19 @@ def text_encryption(public_key_path, private_key_path, message):
     rsa_instance = CryptoRSA(public_key_path, private_key_path)
 
     # Encrypt the message
-    encrypted_session_key, iv, ciphertext = rsa_instance.encrypt_message(message)
+    encrypted_session_key, iv, ciphertext = rsa_instance.encrypt_message(message,salt)
     print("Encrypted Key:", encrypted_session_key)
     print("IV:", iv)
     print("Ciphertext:", ciphertext)
     
     return encrypted_session_key, iv, ciphertext
 
-def text_decryption(public_key_path, private_key_path, encrypted_session_key, iv, ciphertext):
+def text_decryption(public_key_path, private_key_path, encrypted_session_key, iv, ciphertext,salt):
     # Initialize RSA instance
     rsa_instance = CryptoRSA(public_key_path, private_key_path)
 
     # Decrypt the message
-    decrypted_message = rsa_instance.decrypt_message(encrypted_session_key, iv, ciphertext)
+    decrypted_message = rsa_instance.decrypt_message(encrypted_session_key, iv, ciphertext,salt)
     print("Decrypted Message:", decrypted_message)
     
     return decrypted_message

@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask,session,flash,redirect,url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager,current_user,logout_user
 from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
 from .config import get_config
@@ -11,7 +11,7 @@ from sqlalchemy import event
 from flask_apscheduler import APScheduler
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-# from flask_migrate import Migrate
+from datetime import timedelta,datetime
 import logging
 
 db = SQLAlchemy()
@@ -53,6 +53,7 @@ def create_app(mode='default'):
     # Register blueprints
     from .auth import auth
     from .view import view
+
     app.register_blueprint(view, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
@@ -65,6 +66,20 @@ def create_app(mode='default'):
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
+    login_manager.refresh_view = 'auth.login'
+    @app.before_request
+    def before_request():
+        if current_user.is_authenticated:
+            now = datetime.now()  # Naive datetime
+            if 'last_active' in session:
+                last_active_str = session['last_active']
+                if isinstance(last_active_str, str):  # Ensure it's a string before conversion
+                    last_active = datetime.fromisoformat(last_active_str)  # Convert stored string back to datetime
+                    if (now - last_active).seconds > 120:  # 2 minutes
+                        logout_user()
+                        flash('You have been logged out due to inactivity.')
+                        return redirect(url_for('auth.login'))
+            session['last_active'] = now.isoformat()  # Store the current time as ISO 8601 string
 
     @login_manager.user_loader
     def load_user(id):

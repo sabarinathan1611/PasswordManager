@@ -112,60 +112,72 @@ def get_folder_size(folder_path):
         inGB=Converter.convert_to_GB(total_size)
     return inGB
 
-def user_login(db,File,current_user):
+def string_to_hex(input_string):
+    try:
+        # Encode the string to bytes using UTF-8 encoding
+        byte_value = input_string.encode('utf-8')
         
-        user_files = current_user.files  # Assuming 'files' is the relationship between User and File models
+        # Convert each byte to its hexadecimal representation and join them
+        hex_value = byte_value.hex()
+        return hex_value.encode()
+    except Exception as e:
+        print(f"Error encoding string: {e}")
+        return None
+# def user_login(db,File,current_user):
+        
+#         user_files = current_user.files  # Assuming 'files' is the relationship between User and File models
 
-        # Initialize a list to store image data
-        file_data_list = []
+#         # Initialize a list to store image data
+#         file_data_list = []
 
-        # Decrypt and encode each file's data
-        for file in user_files:
-            file_path = aes_cipher.decrypt_data(file.filepath)
-            private_key_path = aes_cipher.decrypt_data(file.private_key_path)
+#         # Decrypt and encode each file's data
+#         for file in user_files:
+#             file_path = aes_cipher.decrypt_data(file.filepath)
+#             private_key_path = aes_cipher.decrypt_data(file.private_key_path)
 
-            # Decrypt the file
-            decryption_instance = File_Decryption()
-            private_key = decryption_instance.load_key_from_file(private_key_path)
-            decrypted_data = decryption_instance.decrypt_file(file_path, private_key)
+#             # Decrypt the file
+#             decryption_instance = File_Decryption()
+#             private_key = decryption_instance.load_key_from_file(private_key_path)
+#             decrypted_data = decryption_instance.decrypt_file(file_path, private_key)
 
-            # Base64 encode the decrypted file data
-            decrypted_data_base64 = rbase64.b64encode(decrypted_data).decode('utf-8')
+#             # Base64 encode the decrypted file data
+#             decrypted_data_base64 = rbase64.b64encode(decrypted_data).decode('utf-8')
             
 
-            mimetype = aes_cipher.decrypt_data(file.mimetype)
+#             mimetype = aes_cipher.decrypt_data(file.mimetype)
 
          
 
 
 
 
-def user_logut(db,File,current_user):
-        user_files = current_user.files
-        for file in user_files:
-            _, extension = os.path.splitext(filename)
-            keypath=app.config['KEY_FOLDER']
-            public_key_path=aes_cipher.decrypt_data(file.public_key_path)
-            private_key_path=aes_cipher.decrypt_data(file.private_key_path)
-            encryption_instance = File_Encryption()
-            key_pair = encryption_instance.generate_key_pair()
-            public_key = key_pair.publickey()
-            private_key = key_pair
-            encryption_instance.save_key_to_file(public_key, public_key_path)
-            encryption_instance.save_key_to_file(private_key, private_key_path)
-            public_key = encryption_instance.load_key_from_file(public_key_path)
-            output=file.filepath
-            print("\n\n\n",output,'\n',type(output),'\n\n')
-            encryption_instance.encrypt_file(filepath, public_key)
+# def user_logut(db,File,current_user):
+#         user_files = current_user.files
+#         for file in user_files:
+#             _, extension = os.path.splitext(filename)
+#             keypath=app.config['KEY_FOLDER']
+#             public_key_path=aes_cipher.decrypt_data(file.public_key_path)
+#             private_key_path=aes_cipher.decrypt_data(file.private_key_path)
+#             encryption_instance = File_Encryption()
+#             key_pair = encryption_instance.generate_key_pair()
+#             public_key = key_pair.publickey()
+#             private_key = key_pair
+#             encryption_instance.save_key_to_file(public_key, public_key_path)
+#             encryption_instance.save_key_to_file(private_key, private_key_path)
+#             public_key = encryption_instance.load_key_from_file(public_key_path)
+#             output=file.filepath
+#             print("\n\n\n",output,'\n',type(output),'\n\n')
+#             encryption_instance.encrypt_file(filepath, public_key)
 
-            addnew=File(filename=aes_cipher.encrypt_data(filename),filepath=aes_cipher.encrypt_data(output),private_key_path=aes_cipher.encrypt_data(private_key_path),public_key_path=aes_cipher.encrypt_data(public_key_path),user_id=current_user.id,mimetype=aes_cipher.encrypt_data(file.mimetype))
-            db.session.add(addnew)
-            db.session.commit()
-            thread = threading.Thread(target=os.remove, args=(filepath,))
-            thread.start()
-            size=os.path.getsize(output)
-            print("SIZE:",size)
-            print("TYPE OF SIZE",type(size))
+#             addnew=File(filename=aes_cipher.encrypt_data(filename),filepath=aes_cipher.encrypt_data(output),private_key_path=aes_cipher.encrypt_data(private_key_path),public_key_path=aes_cipher.encrypt_data(public_key_path),user_id=current_user.id,mimetype=aes_cipher.encrypt_data(file.mimetype))
+#             db.session.add(addnew)
+#             db.session.commit()
+#             thread = threading.Thread(target=os.remove, args=(filepath,))
+#             thread.start()
+#             size=os.path.getsize(output)
+#             print("SIZE:",size)
+#             print("TYPE OF SIZE",type(size))
+
 
 
 

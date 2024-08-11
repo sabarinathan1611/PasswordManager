@@ -85,22 +85,19 @@
       <footer>
         <span>Contact</span>
         <div class="box">
-          <form action="/about" method="post">
-            {{form.csrf_token()}}
+          <form action="/feed-back" method="post">
             <div class="form__group field">
               <input type="input" class="form__field" placeholder="Name" name="name" id='name' required />
               <label for="name" class="form__label">Name</label>
             </div>
             <div class="form__group field">
-              <input type="input" class="form__field" placeholder="Email" name="email" id='name' required />
+              <input type="input" class="form__field" placeholder="Email" name="name" id='name' required />
               <label for="name" class="form__label">Email</label>
             </div>
              <div class="form__group field">
               <!-- <input type="input" class="" placeholder="Name" name="name" id='name' required /> -->
-              <textarea name="text" class="form__field" id="" cols="10" rows="10"></textarea>
+              <textarea class="form__field" id="" cols="10" rows="10"></textarea>
               <label for="name" class="form__label">Feedback</label>
-             {{ form.submit(class="button") }}
-              
             </div>
 
           </form>

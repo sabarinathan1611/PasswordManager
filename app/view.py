@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify,abort
+from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify,abort,session
 from . import db
 from .models import User,Text,File,DeleteAccount,Feedback
 from flask_login import login_required,current_user
@@ -19,6 +19,9 @@ from .Converter import Converter
 aes_cipher = AESCipher()
 
 view = Blueprint('view', __name__)
+
+
+
 
 
 @view.route('/',methods=['POST','GET'])
@@ -81,7 +84,7 @@ def store_pass():
         print('private_key_path',private_key_path)
         encrypted_private=aes_cipher.encrypt_data(private_key_path)
 
-        encrypted_session_key, iv, ciphertext = text_encryption(public_key_path, private_key_path, string)
+        encrypted_session_key, iv, ciphertext = text_encryption(public_key_path, private_key_path, string,salt=session.get('salt'))
         stype=aes_cipher.encrypt_data("password")
         newtext =Text(user_id=current_user.id,encrypted_Key=encrypted_session_key,nonce=iv,ciphertext=ciphertext,private_key_path=encrypted_private,public_key_path=encrypted_public,store_type=stype)
         db.session.add(newtext)
@@ -97,7 +100,7 @@ def showpass():
         passwords = Text.query.filter_by(user_id=current_user.id)
         data=[]
         for  password in passwords:
-            decrypted_message=text_decryption(public_key_path=aes_cipher.decrypt_data(password.public_key_path),private_key_path=aes_cipher.decrypt_data(password.private_key_path),encrypted_session_key=password.encrypted_Key,iv=password.nonce,ciphertext=password.ciphertext)
+            decrypted_message=text_decryption(public_key_path=aes_cipher.decrypt_data(password.public_key_path),private_key_path=aes_cipher.decrypt_data(password.private_key_path),encrypted_session_key=password.encrypted_Key,iv=password.nonce,ciphertext=password.ciphertext,salt=session.get('salt'))
             data.append({
                 "id":password.id,
                 "data":string_to_dict(decrypted_message),
