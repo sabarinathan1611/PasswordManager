@@ -34,14 +34,14 @@ class AESCipher:
 # Example usage
 aes_cipher = AESCipher()
 
-data = "12345678901234567890123ert6789012345678901234567890"
-encrypted_data = aes_cipher.encrypt_data(data)
-print("Encrypted data:", encrypted_data)
-print(len(encrypted_data))
+# data = "12345678901234567890123ert6789012345678901234567890"
+# encrypted_data = aes_cipher.encrypt_data(data)
+# print("Encrypted data:", encrypted_data)
+# print(len(encrypted_data))
 
 
-decrypted_data = aes_cipher.decrypt_data(encrypted_data)
-print("Decrypted data:", decrypted_data)
+# decrypted_data = aes_cipher.decrypt_data(encrypted_data)
+# print("Decrypted data:", decrypted_data)
 
 
 

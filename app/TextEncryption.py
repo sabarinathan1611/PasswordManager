@@ -44,10 +44,10 @@ class CryptoRSA:
         decrypted_message_with_salt = self.unpad_data(cipher_aes.decrypt(ciphertext))
 
         # Remove the salt from the decrypted message
-        print("Salt : ",salt)
-        print("decrypted_message_with_salt :",decrypted_message_with_salt)
-        print("Type of decrypted_message_with_salt :",type(decrypted_message_with_salt))
-        print("Salt: ",decrypted_message_with_salt[ :len(salt)])
+        # print("Salt : ",salt)
+        # print("decrypted_message_with_salt :",decrypted_message_with_salt)
+        # print("Type of decrypted_message_with_salt :",type(decrypted_message_with_salt))
+        # print("Salt: ",decrypted_message_with_salt[ :len(salt)])
 
 
         if salt == decrypted_message_with_salt[:len(salt)]:
@@ -86,16 +86,16 @@ def generate_key_pair(public_key_path, private_key_path):
 def text_encryption(public_key_path, private_key_path, message,salt):
     # Generate key pair
     generate_key_pair(public_key_path, private_key_path)
-    print("Public and private key pair generated successfully.")
+    # print("Public and private key pair generated successfully.")
 
     # Initialize RSA instance
     rsa_instance = CryptoRSA(public_key_path, private_key_path)
 
     # Encrypt the message
     encrypted_session_key, iv, ciphertext = rsa_instance.encrypt_message(message,salt)
-    print("Encrypted Key:", encrypted_session_key)
-    print("IV:", iv)
-    print("Ciphertext:", ciphertext)
+    # print("Encrypted Key:", encrypted_session_key)
+    # print("IV:", iv)
+    # print("Ciphertext:", ciphertext)
     
     return encrypted_session_key, iv, ciphertext
 
@@ -105,7 +105,7 @@ def text_decryption(public_key_path, private_key_path, encrypted_session_key, iv
 
     # Decrypt the message
     decrypted_message = rsa_instance.decrypt_message(encrypted_session_key, iv, ciphertext,salt)
-    print("Decrypted Message:", decrypted_message)
+    # print("Decrypted Message:", decrypted_message)
     
     return decrypted_message
 

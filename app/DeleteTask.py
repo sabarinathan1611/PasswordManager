@@ -143,5 +143,3 @@ def delete_user_files_and_data():
         print(f"Database connection failed: {e}")
         return 500
 
-# Assuming aes_cipher is already defined and properly initialized somewhere in your code.
-# Ensure to import required modules and define the AES cipher object before running this script.

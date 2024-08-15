@@ -327,15 +327,4 @@ def about():
         feedback=Feedback(name=name,email=email,text=text)
         db.session.add(feedback)
         db.session.commit()
-
-
     return render_template("About.html",form=form)
-
-
-
-
-
-
-
-
-

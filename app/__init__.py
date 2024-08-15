@@ -35,7 +35,7 @@ def create_app(mode='default'):
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     KEY_FOLDER = os.path.join(app.root_path, 'static/key/')
     app.config['KEY_FOLDER'] = KEY_FOLDER
-
+    print("app.root_path : ",app.root_path)
     # Initialize database
     db.init_app(app)
     # migrate = Migrate(app, db)  
@@ -79,7 +79,7 @@ def create_app(mode='default'):
                         logout_user()
                         flash('You have been logged out due to inactivity.')
                         return redirect(url_for('auth.login'))
-            session['last_active'] = now.isoformat()  # Store the current time as ISO 8601 string
+            session['last_active'] = now.isoformat() 
 
     @login_manager.user_loader
     def load_user(id):
@@ -95,39 +95,4 @@ def create_database(app):
         with app.app_context():
             db.create_all()
         print('Created Database!')
-
-# def create_log(app):
-#     log_formatter = logging.Formatter(
-#         '%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s'
-#     )
-
-#     log_handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
-#     log_handler.setLevel(logging.INFO)
-#     log_handler.setFormatter(log_formatter)
-#     app.logger.addHandler(log_handler)
-
-#     # Register SQLAlchemy event listeners for all models
-#     with app.app_context():
-#         @event.listens_for(db.engine, 'before_cursor_execute')
-#         def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
-#             app.logger.info(f'Executing statement: {statement}')
-
-#         @event.listens_for(db.engine, 'after_cursor_execute')
-#         def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
-#             app.logger.info(f'Executed statement: {statement}')
-
-#         for cls in db.Model._decl_class_registry.values():
-#             if hasattr(cls, '__table__'):
-#                 mapper = db.inspect(cls)
-#                 @event.listens_for(mapper, 'after_insert')
-#                 def after_insert_listener(mapper, connection, target):
-#                     app.logger.info(f'Inserted record: {target}')
-
-#                 @event.listens_for(mapper, 'after_update')
-#                 def after_update_listener(mapper, connection, target):
-#                     app.logger.info(f'Updated record: {target}')
-
-#                 @event.listens_for(mapper, 'after_delete')
-#                 def after_delete_listener(mapper, connection, target):
-#                     app.logger.info(f'Deleted record: {target}')
 
