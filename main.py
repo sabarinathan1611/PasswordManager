@@ -2,7 +2,7 @@
 from app import create_app
 
 
-app = create_app(mode='development')
+app = create_app(mode='production')
 
 
 

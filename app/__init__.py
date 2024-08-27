@@ -19,7 +19,7 @@ db = SQLAlchemy()
 mail = Mail()
 scheduler=APScheduler()
 csrf = CSRFProtect()
-DB_NAME = "database.db"
+# DB_NAME = "database.db"
 engine=None
 Session=None
 
@@ -75,7 +75,7 @@ def create_app(mode='default'):
                 last_active_str = session['last_active']
                 if isinstance(last_active_str, str):  # Ensure it's a string before conversion
                     last_active = datetime.fromisoformat(last_active_str)  # Convert stored string back to datetime
-                    if (now - last_active).seconds > 120:  # 2 minutes
+                    if (now - last_active).seconds > 300:  # 2 minutes
                         logout_user()
                         flash('You have been logged out due to inactivity.')
                         return redirect(url_for('auth.login'))
@@ -91,8 +91,7 @@ def create_app(mode='default'):
     return app
 
 def create_database(app):
-    if not os.path.exists('app/' + DB_NAME):
-        with app.app_context():
-            db.create_all()
-        print('Created Database!')
+    with app.app_context():
+        db.create_all()
+    print('Initialized Database!')
 

@@ -2,16 +2,18 @@ import os
 import secrets
 
 
+          
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', secrets.token_hex(16))
     print("SECRET_KEY :",SECRET_KEY)
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI', 'sqlite:///database.db')
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
     SESSION_COOKIE_HTTPOLY=True
     SESSION_COOKIE_SECURE = False
     SCHEDULER_API_ENABLED = True
-    # SERVER_NAME='netbug.xyz:5000'
+  
+
 
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465
@@ -31,9 +33,17 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'  
+    print("SQLALCHEMY_DATABASE_URI :",SQLALCHEMY_DATABASE_URI)
 
+
+
+    
 class ProductionConfig(Config):
     DEBUG = False
+    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URI')
+    print("SQLALCHEMY_DATABASE_URI :",SQLALCHEMY_DATABASE_URI)
+    
 
 config_by_name = {
     'development': DevelopmentConfig,

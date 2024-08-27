@@ -19,7 +19,7 @@ from logging.handlers import RotatingFileHandler
 from .DeleteTask import delete_user_files_and_data
 
 #scheduler.add_job(id='minute_task', func=delete_user_files_and_data, trigger='interval', minutes=2)
-#scheduler.add_job(id='daily_task', func=delete_user_files_and_data, trigger='cron', hour=0, minute=0)
+scheduler.add_job(id='daily_task', func=delete_user_files_and_data, trigger='cron', hour=0, minute=0)
 
 aes_cipher = AESCipher()
 def send_verification_email(user,passChange=False):

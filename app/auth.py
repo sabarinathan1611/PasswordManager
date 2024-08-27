@@ -33,6 +33,7 @@ def login():
 
         encrypted_password=aes_cipher.encrypt_data(password)
         session['salt']=encrypted_password+string_to_hex(password)
+        print("type",type(session.get('salt')))
 
         print("\n ----------------------------\n")
         print("Password :",encrypted_password)
@@ -64,6 +65,8 @@ def sign_up():
         password = request.form.get('password')
         name = request.form.get('fullname')
         hashed_password = generate_password_hash(password)
+        print("\t\n\n\n\n\n\n\n\n\n\nencrypted_email :",type(hashed_password),"\t\n\n\n\n\n\n\n\n")
+
 
         
         encrypted_name=aes_cipher.encrypt_data(data=name)
@@ -77,7 +80,7 @@ def sign_up():
             if email == Config.AdminMail:
                 print("Admin Email:",Config.AdminMail)
                 path=makedir()
-                user = User(email=encrypted_email,path=path, password=hashed_password, username=encrypted_name,is_verified=True,role='admin',limited_storage=1073741824)
+                user = User(email=encrypted_email,path=aes_cipher.encrypt_data(path), password=hashed_password, username=encrypted_name,is_verified=True,role='admin',limited_storage=1073741824)
                 db.session.add(user)
                 db.session.commit()
 

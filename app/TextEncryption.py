@@ -31,6 +31,7 @@ class CryptoRSA:
         return base64.b64encode(encrypted_session_key), base64.b64encode(cipher_aes.iv), base64.b64encode(ciphertext)
 
     def decrypt_message(self, encrypted_session_key_b64, iv_b64, ciphertext_b64,salt):
+       
         encrypted_session_key = base64.b64decode(encrypted_session_key_b64)
         iv = base64.b64decode(iv_b64)
         ciphertext = base64.b64decode(ciphertext_b64)
