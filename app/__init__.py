@@ -75,7 +75,7 @@ def create_app(mode='default'):
                 last_active_str = session['last_active']
                 if isinstance(last_active_str, str):  # Ensure it's a string before conversion
                     last_active = datetime.fromisoformat(last_active_str)  # Convert stored string back to datetime
-                    if (now - last_active).seconds > 300:  # 2 minutes
+                    if (now - last_active).seconds > 30:  # 2 minutes
                         logout_user()
                         flash('You have been logged out due to inactivity.')
                         return redirect(url_for('auth.login'))
