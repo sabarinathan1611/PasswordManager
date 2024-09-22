@@ -89,11 +89,11 @@ def sign_up():
                 return redirect(url_for('view.home'))
             else:
                 path=makedir()
-                print('Account created')
                 
                 user = User(email=encrypted_email,path=path, password=hashed_password, username=encrypted_name)
                 db.session.add(user)
                 db.session.commit()
+                print('Account created')
 
                 # Send verification email to the user
                 send_verification_email(user)

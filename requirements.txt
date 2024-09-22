@@ -9,4 +9,4 @@ flask_cors
 flask_apscheduler
 email_validator
 pycryptodome
-_sqlite3
+

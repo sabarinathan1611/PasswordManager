@@ -41,7 +41,7 @@ class DevelopmentConfig(Config):
     
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI='postgresql+psycopg2://admin:123456@localhost/cloud'
     print("SQLALCHEMY_DATABASE_URI :",SQLALCHEMY_DATABASE_URI)
     
 
