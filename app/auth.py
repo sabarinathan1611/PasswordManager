@@ -10,10 +10,10 @@ from .config import Config
 from flask_cors import cross_origin
 from .dataencryption import AESCipher 
 import secrets
-
+from .Log import Log as log
 from datetime import timedelta,datetime
 
- 
+
 auth = Blueprint('auth', __name__)
 aes_cipher = AESCipher()
 
@@ -46,6 +46,7 @@ def login():
         if user and check_password_hash(user.password, password):
             session['last_active'] = datetime.now()
             login_user(user, remember=True)
+            # log.writeLog("Login",user.id)
             return redirect(url_for('view.home'))
         else:
             flash("Login unsuccessful. Please check your email and password.")
@@ -90,13 +91,13 @@ def sign_up():
             else:
                 path=makedir()
                 
-                user = User(email=encrypted_email,path=path, password=hashed_password, username=encrypted_name)
+                user = User(email=encrypted_email,path=aes_cipher.encrypt_data(path), password=hashed_password, username=encrypted_name,is_verified=True)
                 db.session.add(user)
                 db.session.commit()
                 print('Account created')
 
                 # Send verification email to the user
-                send_verification_email(user)
+                # send_verification_email(user)
 
                 flash('Account created successfully. Check your email for verification.', 'success')
     return redirect(url_for('view.home'))

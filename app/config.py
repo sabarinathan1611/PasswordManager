@@ -12,7 +12,7 @@ class Config:
     SESSION_COOKIE_HTTPOLY=True
     SESSION_COOKIE_SECURE = False
     SCHEDULER_API_ENABLED = True
-  
+    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URI')
 
 
     MAIL_SERVER = 'smtp.gmail.com'
@@ -34,15 +34,15 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'  
-    print("SQLALCHEMY_DATABASE_URI :",SQLALCHEMY_DATABASE_URI)
+   
 
 
 
     
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI='postgresql+psycopg2://admin:123456@localhost/cloud'
-    print("SQLALCHEMY_DATABASE_URI :",SQLALCHEMY_DATABASE_URI)
+    # SQLALCHEMY_DATABASE_URI='postgresql+psycopg2://admin:123456@localhost/newcloud'
+   
     
 
 config_by_name = {
